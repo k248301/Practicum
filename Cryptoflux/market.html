@@ -4,104 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Crypto Flux - Market Data</title>
-
     <link rel="stylesheet" href="css/marketcss.css" />
     <link
       href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
       rel="stylesheet"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script>
-      function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-          tabcontent[i].style.display = "none";
-        }
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-          tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        document.querySelector(".tablinks").click();
-      });
-
-      var socket = io.connect("https://evolving-ghastly-rabbit.ngrok-free.app");
-      socket.on("On_Market_Data_Update", function (data) {
-        updateTableRow(data);
-      });
-
-      function updateTableRow(data) {
-        var existingRow = document.getElementById(data.ticker);
-        if (!existingRow) {
-          var newRow = document.createElement("tr");
-          newRow.id = data.ticker;
-
-          var symbolCell = document.createElement("td");
-          symbolCell.textContent = data.ticker;
-          newRow.appendChild(symbolCell);
-
-          var timeCell = document.createElement("td");
-          timeCell.textContent = data.time;
-          newRow.appendChild(timeCell);
-
-          var priceCells = [
-            "bid",
-            "ask",
-            "last",
-            "open",
-            "close",
-            "high",
-            "low",
-            "spread",
-          ];
-          for (var i = 0; i < priceCells.length; i++) {
-            var priceCell = document.createElement("td");
-            priceCell.textContent = data[priceCells[i]].toFixed(2);
-            newRow.appendChild(priceCell);
-          }
-
-          var volumeCell = document.createElement("td");
-          volumeCell.textContent = data.volume;
-          newRow.appendChild(volumeCell);
-
-          var tickvolumeCell = document.createElement("td");
-          tickvolumeCell.textContent = data.tick_volume;
-          newRow.appendChild(tickvolumeCell);
-
-          var tableBody = document.querySelector("#marketDataTable tbody");
-          tableBody.appendChild(newRow);
-        } else {
-          var cells = existingRow.cells;
-          cells[0].textContent = data.ticker;
-          cells[1].textContent = data.time; // Format the time here if needed
-          var prevBid = parseFloat(cells[2].textContent);
-          var prevAsk = parseFloat(cells[3].textContent);
-          cells[2].textContent = data.bid.toFixed(2);
-          cells[3].textContent = data.ask.toFixed(2);
-          cells[4].textContent = data.last.toFixed(2);
-          cells[5].textContent = data.open.toFixed(2);
-          cells[6].textContent = data.close.toFixed(2);
-          cells[7].textContent = data.high.toFixed(2);
-          cells[8].textContent = data.low.toFixed(2);
-          cells[9].textContent = data.spread.toFixed(2);
-          cells[10].textContent = data.volume;
-          cells[11].textContent = data.tick_volume;
-          var newBid = parseFloat(data.bid.toFixed(2));
-          var newAsk = parseFloat(data.ask.toFixed(2));
-
-          cells[2].style.color = newBid < prevBid ? "red" : "blue";
-          cells[3].style.color = newAsk < prevAsk ? "red" : "blue";
-        }
-      }
-    </script>
-    <script type="module" src="firebase-script.js"></script>
   </head>
-
   <body>
     <div class="page-container">
       <nav>
@@ -119,6 +28,7 @@
           <li><button class="btn1" id="logout-button">Logout</button></li>
         </ul>
       </nav>
+
       <div class="content-wrap">
         <div class="tab">
           <button class="tablinks" onclick="openTab(event, 'MarketData')">
@@ -144,14 +54,84 @@
                 <th>Tick Volume</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              <tr>
+                <td>BTC/USD</td>
+                <td>10:15:32</td>
+                <td class="bid">67125.45</td>
+                <td class="ask">67130.10</td>
+                <td>67128.22</td>
+                <td>66800.00</td>
+                <td>67100.50</td>
+                <td>67220.00</td>
+                <td>66750.00</td>
+                <td>4.65</td>
+                <td>1234</td>
+                <td>9821</td>
+              </tr>
+              <tr>
+                <td>ETH/USD</td>
+                <td>10:15:32</td>
+                <td class="bid">3521.18</td>
+                <td class="ask">3522.40</td>
+                <td>3521.75</td>
+                <td>3490.00</td>
+                <td>3518.00</td>
+                <td>3530.00</td>
+                <td>3485.00</td>
+                <td>1.22</td>
+                <td>5421</td>
+                <td>10432</td>
+              </tr>
+              <tr>
+                <td>XRP/USD</td>
+                <td>10:15:32</td>
+                <td class="bid">0.523</td>
+                <td class="ask">0.526</td>
+                <td>0.525</td>
+                <td>0.512</td>
+                <td>0.520</td>
+                <td>0.530</td>
+                <td>0.510</td>
+                <td>0.003</td>
+                <td>90421</td>
+                <td>15324</td>
+              </tr>
+              <tr>
+                <td>LTC/USD</td>
+                <td>10:15:32</td>
+                <td class="bid">84.65</td>
+                <td class="ask">84.92</td>
+                <td>84.81</td>
+                <td>82.10</td>
+                <td>84.60</td>
+                <td>85.00</td>
+                <td>81.95</td>
+                <td>0.27</td>
+                <td>7123</td>
+                <td>9623</td>
+              </tr>
+              <tr>
+                <td>BNB/USD</td>
+                <td>10:15:32</td>
+                <td class="bid">598.40</td>
+                <td class="ask">599.05</td>
+                <td>598.70</td>
+                <td>591.00</td>
+                <td>597.80</td>
+                <td>602.00</td>
+                <td>590.00</td>
+                <td>0.65</td>
+                <td>1324</td>
+                <td>8321</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
 
       <footer class="footer">
         <div class="footer-container">
-          <!-- Left Section -->
           <div class="footer-section footer-left">
             <img
               src="media/cryptoflux-logo-white.png"
@@ -162,8 +142,6 @@
               &copy; 2025 CryptoFlux. All rights reserved.
             </p>
           </div>
-
-          <!-- Center Section -->
           <div class="footer-section footer-center">
             <div class="footer-item">
               <i class="ri-map-pin-2-line"></i>
@@ -182,8 +160,6 @@
               </p>
             </div>
           </div>
-
-          <!-- Right Section -->
           <div class="footer-section footer-right">
             <div class="footer-icons">
               <a href="#"><i class="ri-facebook-circle-fill"></i></a>
@@ -196,18 +172,206 @@
       </footer>
     </div>
 
-    <script type="module" src="firebase-script.js"></script>
     <script>
+      // ----------------- Tabs -----------------
+      function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+      }
       document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector(".tablinks").click();
         const menuButton = document.querySelector(".menu0");
         const navLinks = document.querySelector(".nav-links");
-
         if (menuButton && navLinks) {
-          menuButton.addEventListener("click", () => {
-            navLinks.classList.toggle("show");
-          });
+          menuButton.addEventListener("click", () =>
+            navLinks.classList.toggle("show")
+          );
         }
       });
+    </script>
+
+    <script>
+      // ----------------- Socket.IO + Simulation -----------------
+      const previousPrices = {};
+      let simulationInterval = null;
+
+      function updatePrices() {
+        document.querySelectorAll("tbody tr").forEach((row) => {
+          const symbol = row.children[0].textContent;
+          const bidCell = row.querySelector(".bid");
+          const askCell = row.querySelector(".ask");
+
+          const oldBid =
+            previousPrices[symbol]?.bid || parseFloat(bidCell.textContent);
+          const oldAsk =
+            previousPrices[symbol]?.ask || parseFloat(askCell.textContent);
+
+          const newBid = parseFloat(
+            (oldBid + (Math.random() - 0.5) * 5).toFixed(2)
+          );
+          const newAsk = parseFloat(
+            (oldAsk + (Math.random() - 0.5) * 5).toFixed(2)
+          );
+
+          updateCell(bidCell, oldBid, newBid);
+          updateCell(askCell, oldAsk, newAsk);
+
+          previousPrices[symbol] = { bid: newBid, ask: newAsk };
+        });
+      }
+
+      /*function updateCell(cell, oldValue, newValue) {
+        const arrowUp = "▲";
+        const arrowDown = "▼";
+
+        if (newValue > oldValue) {
+          cell.innerHTML = `<span style="color: blue;">${newValue} <span>${arrowUp}</span></span>`;
+        } else if (newValue < oldValue) {
+          cell.innerHTML = `<span style="color: red;">${newValue} <span>${arrowDown}</span></span>`;
+        } else {
+          cell.textContent = newValue;
+          cell.style.color = "black"; // normal black text if unchanged
+        }
+      }*/
+
+      function updateCell(cell, oldValue, newValue) {
+        const arrowUp = "▲";
+        const arrowDown = "▼";
+
+        // Calculate the color & arrow
+        let color = "black";
+        let arrow = "";
+
+        if (newValue > oldValue) {
+          color = "blue";
+          arrow = arrowUp;
+        } else if (newValue < oldValue) {
+          color = "red";
+          arrow = arrowDown;
+        }
+
+        // Only update the text, not the entire HTML
+        cell.textContent = `${newValue.toFixed(2)} ${arrow}`;
+        cell.style.color = color;
+
+        // Optional: Add a subtle highlight flash for change
+        cell.classList.remove("flash");
+        void cell.offsetWidth; // restart CSS animation
+        cell.classList.add("flash");
+      }
+
+      function startSimulation() {
+        if (!simulationInterval) {
+          simulationInterval = setInterval(updatePrices, 2000);
+          console.log("Simulation started (Socket.IO not connected)");
+        }
+      }
+
+      // Socket.IO connection
+      let socket;
+      try {
+        socket = io.connect("https://evolving-ghastly-rabbit.ngrok-free.app", {
+          timeout: 5000,
+        });
+
+        socket.on("connect", () => {
+          console.log("Socket.IO connected, using real-time updates");
+          if (simulationInterval) {
+            clearInterval(simulationInterval);
+            simulationInterval = null;
+          }
+        });
+
+        socket.on("connect_error", () => {
+          console.warn(
+            "Socket.IO connection failed, falling back to simulation"
+          );
+          startSimulation();
+        });
+
+        socket.on("disconnect", () => {
+          console.warn("Socket.IO disconnected, falling back to simulation");
+          startSimulation();
+        });
+
+        socket.on("On_Market_Data_Update", (data) => {
+          const existingRow = document.getElementById(data.ticker);
+          if (!existingRow) {
+            const newRow = document.createElement("tr");
+            newRow.id = data.ticker;
+
+            const symbolCell = document.createElement("td");
+            symbolCell.textContent = data.ticker;
+            newRow.appendChild(symbolCell);
+
+            const timeCell = document.createElement("td");
+            timeCell.textContent = data.time;
+            newRow.appendChild(timeCell);
+
+            [
+              "bid",
+              "ask",
+              "last",
+              "open",
+              "close",
+              "high",
+              "low",
+              "spread",
+            ].forEach((key) => {
+              const cell = document.createElement("td");
+              cell.textContent = data[key].toFixed(2);
+              newRow.appendChild(cell);
+            });
+
+            const volumeCell = document.createElement("td");
+            volumeCell.textContent = data.volume;
+            newRow.appendChild(volumeCell);
+
+            const tickVolumeCell = document.createElement("td");
+            tickVolumeCell.textContent = data.tick_volume;
+            newRow.appendChild(tickVolumeCell);
+
+            document
+              .querySelector("#marketDataTable tbody")
+              .appendChild(newRow);
+          } else {
+            const cells = existingRow.cells;
+            cells[1].textContent = data.time;
+            const prevBid = parseFloat(cells[2].textContent);
+            const prevAsk = parseFloat(cells[3].textContent);
+
+            cells[2].textContent = data.bid.toFixed(2);
+            cells[3].textContent = data.ask.toFixed(2);
+            cells[4].textContent = data.last.toFixed(2);
+            cells[5].textContent = data.open.toFixed(2);
+            cells[6].textContent = data.close.toFixed(2);
+            cells[7].textContent = data.high.toFixed(2);
+            cells[8].textContent = data.low.toFixed(2);
+            cells[9].textContent = data.spread.toFixed(2);
+            cells[10].textContent = data.volume;
+            cells[11].textContent = data.tick_volume;
+
+            cells[2].style.color = data.bid < prevBid ? "red" : "blue";
+            cells[3].style.color = data.ask < prevAsk ? "red" : "blue";
+          }
+        });
+      } catch (error) {
+        console.error("Socket.IO error:", error);
+        startSimulation();
+      }
+
+      setTimeout(() => {
+        if (!socket || !socket.connected) startSimulation();
+      }, 3000);
     </script>
   </body>
 </html>
