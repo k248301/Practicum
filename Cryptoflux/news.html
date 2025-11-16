@@ -141,9 +141,24 @@
         </ul>
       </nav>
       <div class="content-wrap">
-        <div class="container">
-          <div class="container" id="newsContainer">
-            <!-- News articles will be dynamically added here -->
+        <!--<div class="container">
+          <div class="container" id="newsContainer">-->
+        <!-- News articles will be dynamically added here -->
+        <!--</div>
+        </div>-->
+
+        <div class="news-section">
+          <div class="top-news">
+            <div class="main-article" id="mainArticle"></div>
+            <div class="side-articles" id="sideArticles"></div>
+          </div>
+
+          <div class="slider-container">
+            <button class="slider-btn prev" onclick="scrollSlider(-1)">
+              ‹
+            </button>
+            <div class="slider" id="slider"></div>
+            <button class="slider-btn next" onclick="scrollSlider(1)">›</button>
           </div>
         </div>
       </div>
@@ -191,5 +206,108 @@
         </div>
       </footer>
     </div>
+    <script>
+      async function loadNews() {
+        // Replace this dummy data with your API later
+        const news = [
+          {
+            cover: "https://source.unsplash.com/800x500/?news",
+            headline: "Global Summit Highlights Climate Concerns",
+            text: "Leaders from around the world met to discuss urgent actions for climate sustainability.",
+          },
+          {
+            cover: "https://source.unsplash.com/400x300/?sports",
+            headline: "Pakistan Clinches Series Victory",
+            text: "A thrilling finish led Pakistan to a memorable cricket series win.",
+          },
+          {
+            cover: "https://source.unsplash.com/400x300/?technology",
+            headline: "AI Continues to Revolutionize Tech",
+            text: "Companies are rapidly adopting AI to automate and enhance efficiency.",
+          },
+          {
+            cover: "https://source.unsplash.com/400x300/?business",
+            headline: "Market Sees Unprecedented Growth",
+            text: "Investors are optimistic as stock markets hit record highs.",
+          },
+          {
+            cover: "https://source.unsplash.com/400x300/?education",
+            headline: "Education Policy Brings Reforms",
+            text: "Government introduces new measures to modernize schools nationwide.",
+          },
+          {
+            cover: "https://source.unsplash.com/400x300/?science",
+            headline: "Space Mission Achieves New Milestone",
+            text: "The spacecraft successfully entered orbit, marking a major achievement.",
+          },
+          {
+            cover: "https://source.unsplash.com/400x300/?finance",
+            headline: "Cryptocurrency on the Rise Again",
+            text: "Bitcoin surges past key levels as traders anticipate bullish trends.",
+          },
+          {
+            cover: "https://source.unsplash.com/400x300/?culture",
+            headline: "Festival Brings Communities Together",
+            text: "Colorful performances and traditions mark this year's celebration.",
+          },
+        ];
+
+        // Display main + side + slider
+        displayTopNews(news.slice(0, 4)); // 1 main + 3 side
+        displaySlider(news.slice(4)); // remaining for slider
+      }
+
+      function displayTopNews(articles) {
+        const main = articles[0];
+        const sides = articles.slice(1);
+
+        document.getElementById("mainArticle").innerHTML = `
+      <img src="${main.cover}" alt="Main Article">
+      <div class="overlay">
+        <h2>${main.headline}</h2>
+        <p>${main.text}</p>
+      </div>
+    `;
+
+        document.getElementById("sideArticles").innerHTML = sides
+          .map(
+            (a) => `
+      <div class="side-article">
+        <img src="${a.cover}" alt="">
+        <div class="content">
+          <h4>${a.headline}</h4>
+          <p>${a.text}</p>
+        </div>
+      </div>
+    `
+          )
+          .join("");
+      }
+
+      function displaySlider(articles) {
+        const slider = document.getElementById("slider");
+        slider.innerHTML = articles
+          .map(
+            (a) => `
+      <div class="slide">
+        <img src="${a.cover}" alt="">
+        <div class="slide-content">
+          <h5>${a.headline}</h5>
+          <p>${a.text}</p>
+        </div>
+      </div>
+    `
+          )
+          .join("");
+      }
+
+      function scrollSlider(direction) {
+        const slider = document.getElementById("slider");
+        const scrollAmount = 300 * direction;
+        slider.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
+
+      loadNews();
+    </script>
   </body>
 </html>

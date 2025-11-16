@@ -264,8 +264,21 @@
             </tbody>
             <tfoot></tfoot>
           </table>
+          <!--<div style="display: flex; justify-content: flex-end">
+            <iframe id="hiddenFrame" style="display: none"></iframe>
+            <button id="botButton" class="btn2" onclick="signalBot()">
+              Start Bot
+            </button>
+          </div>
           <div style="display: flex; justify-content: flex-end">
             <iframe id="hiddenFrame" style="display: none"></iframe>
+            <button id="botButton" class="btn2" onclick="signalBot()">
+              Configure Bot
+            </button>
+          </div>-->
+          <div class="bot-actions">
+            <iframe id="hiddenFrame" style="display: none"></iframe>
+            <button id="configButton" class="btn2">Configure Bot</button>
             <button id="botButton" class="btn2" onclick="signalBot()">
               Start Bot
             </button>
@@ -338,5 +351,49 @@
         </div>
       </footer>
     </div>
+    <!-- Bot Configuration Popup -->
+    <!-- Bot Config Modal -->
+    <div id="configModal" class="modal">
+      <div class="modal-box">
+        <h2>Bot Configuration</h2>
+
+        <label>Stop Loss</label>
+        <input type="number" id="stopLoss" />
+
+        <label>Take Profit</label>
+        <input type="number" id="takeProfit" />
+
+        <label>Max Volume</label>
+        <input type="number" id="maxVolume" />
+
+        <label>Min Volume</label>
+        <input type="number" id="minVolume" />
+
+        <label>Max Trades</label>
+        <input type="number" id="maxTrades" />
+
+        <div class="modal-btns">
+          <button class="btn-cancel btn2">Cancel</button>
+          <button class="btn-done btn2">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Open modal
+      document.getElementById("configButton").onclick = function () {
+        document.getElementById("configModal").style.display = "flex";
+      };
+
+      // Close modal
+      document.querySelector(".btn-cancel").onclick = function () {
+        document.getElementById("configModal").style.display = "none";
+      };
+
+      // Done button (save + close)
+      document.querySelector(".btn-done").onclick = function () {
+        document.getElementById("configModal").style.display = "none";
+      };
+    </script>
   </body>
 </html>
