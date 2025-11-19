@@ -129,20 +129,50 @@
       <!-- Login Form -->
       <form id="login-form">
         <label>Username</label>
-        <input type="text" placeholder="Enter your email" required />
+        <input
+          type="email"
+          class="in-email"
+          placeholder="Enter your email"
+          required
+        />
+
         <label>Password</label>
-        <input type="password" placeholder="Enter your password" required />
+        <input
+          type="password"
+          class="in-password"
+          placeholder="Enter your password"
+          required
+        />
+
         <input type="submit" value="Login" />
       </form>
 
       <!-- Signup Form -->
       <form id="signup-form" style="display: none">
         <label>Email</label>
-        <input type="email" placeholder="Enter your email" required />
+        <input
+          type="email"
+          class="up-email"
+          placeholder="Enter your email"
+          required
+        />
+
         <label>Password</label>
-        <input type="password" placeholder="Enter your password" required />
+        <input
+          type="password"
+          class="up-password"
+          placeholder="Enter your password"
+          required
+        />
+
         <label>Confirm Password</label>
-        <input type="password" placeholder="Confirm your password" required />
+        <input
+          type="password"
+          class="up-confirm-password"
+          placeholder="Confirm your password"
+          required
+        />
+
         <input type="submit" value="Sign Up" />
       </form>
 
@@ -170,5 +200,6 @@
         }
       });
     </script>
+    <script type="module" src="firebase-script.js"></script>
   </body>
 </html>
