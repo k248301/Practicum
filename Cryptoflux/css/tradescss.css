@@ -123,7 +123,7 @@ nav {
 /* Main popup box */
 .modal-box {
   width: 450px;
-  background: url("your-background-image.png"); /* optional */
+  background-color: #f3f3f3;
   background-size: cover;
   border-radius: 25px;
   padding: 35px 40px;

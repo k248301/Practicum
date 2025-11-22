@@ -34,29 +34,43 @@
 
       /* 🔹 Container (bigger + centered content) */
       .container {
+        width: 40vw;
+        height: 80vh;
+
         background-color: #f3f3f3;
-        border-radius: 16px;
+        border-radius: 20px;
+        backdrop-filter: blur(8px);
+
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+
+        padding: 3vh 3vw; /* responsive padding */
+        gap: 2vh;
+
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-        padding: 60px 80px;
-        width: 460px;
         text-align: center;
       }
 
       .container img {
-        width: 200px;
-        margin-bottom: 20px;
+        width: 22vw;
+        max-width: 300px;
       }
 
       .title {
-        font-size: 32px;
+        font-size: 2.4vw;
         font-weight: 700;
+        /*font-size: 32px;
+        font-weight: 700;*/
         margin-bottom: 25px;
         color: #000;
       }
 
       label {
-        display: block;
+        font-size: 1.2vw;
         font-weight: 600;
+        display: block;
         margin-bottom: 8px;
         color: #000;
         text-align: center;
@@ -66,14 +80,19 @@
       input[type="email"],
       input[type="password"] {
         width: 100%;
-        padding: 14px;
+        /*padding: 14px;*/
         margin-bottom: 25px;
         border: none;
-        border-radius: 10px;
-        font-size: 16px;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        /*border-radius: 10px;*/
+        /*font-size: 16px;*/
+        text-align: left;
+        /*box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);*/
         outline: none;
+        padding: 1.4vw; /* makes inputs taller */
+        border-radius: 12px;
+        font-size: 1.2vw; /* text inside scales */
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+        border: 1px solid #ddd;
       }
 
       input::placeholder {
@@ -81,7 +100,7 @@
       }
 
       input[type="submit"] {
-        background: linear-gradient(to right, #02a6ff, #0094f2);
+        /*background: linear-gradient(to right, #02a6ff, #0094f2);
         color: #fff;
         font-weight: 600;
         border: none;
@@ -89,23 +108,39 @@
         cursor: pointer;
         width: 100%;
         padding: 14px;
-        font-size: 17px;
+        font-size: 17px;*/
         transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        /*box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);*/
+        width: 100%;
+
+        padding: 1.4vw;
+        border-radius: 12px;
+        font-size: 1.3vw;
+        font-weight: 600;
+
+        background: linear-gradient(90deg, #2289ff, #6ad0ff);
+        color: #fff;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+        cursor: pointer;
       }
 
       input[type="submit"]:hover {
-        background: #007ce0;
-        transform: scale(1.02);
+        /*background: #007ce0;
+        transform: scale(1.02);*/
+        background: linear-gradient(90deg, #1a73e8, #4cb2f5);
+        transform: translateY(-3px);
       }
 
       .toggle-link {
         color: #02a6ff;
         display: block;
-        margin-top: 20px;
-        font-weight: 500;
+        /*margin-top: 20px;*/
+        /*font-weight: 500;*/
         text-decoration: none;
         transition: 0.3s;
+        font-size: 1.1vw;
+        margin-top: 1vh;
       }
 
       .toggle-link:hover {
