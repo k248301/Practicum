@@ -401,3 +401,135 @@ tbody tr:hover {
 .tabcontent.active {
   display: block;
 }
+
+/* ======= Modal & Button Styles ======= */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  overflow: auto;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: white;
+  width: 60%;
+  max-width: 900px;
+  height: 500px; /* 🔥 FIXED HEIGHT */
+  margin: 5% auto;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.close {
+  font-size: 28px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#graphContainer {
+  flex: 1;
+  overflow: hidden; /* prevents double scroll */
+}
+
+#graphCanvas {
+  width: 100% !important;
+  height: 100% !important; /* 🔥 CHART ALWAYS FITS AREA */
+}
+
+/* ===== MODAL FIXED HEIGHT + SCROLLABLE CONTENT ===== */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+}
+
+.modal-content {
+  background: white;
+  width: 65%;
+  max-height: 80vh; /* FIXED HEIGHT */
+  overflow-y: auto; /* SCROLLABLE */
+  margin: 5% auto;
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+#graphCanvas {
+  width: 100%;
+  height: 350px !important;
+}
+
+.viewBtn {
+  padding: 5px 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.time-buttons {
+  margin: 10px 0 20px;
+}
+.time-buttons button {
+  padding: 6px 12px;
+  border: none;
+  background: #333;
+  color: #fff;
+  margin-right: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.time-buttons button.active {
+  background: #007bff;
+}
+
+/* Tabs */
+.tabcontent {
+  display: none;
+}
+.tablinks.active {
+  background-color: #007bff;
+  color: white;
+}
+
+/*flash {
+  animation: flashAnim 0.5s;
+}
+@keyframes flashAnim {
+  from {
+    background-color: yellow;
+  }
+  to {
+    background-color: transparent;
+  }
+}*/

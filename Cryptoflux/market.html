@@ -10,16 +10,19 @@
       rel="stylesheet"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.4.3"></script>
+
+    <style></style>
   </head>
   <body>
     <div class="page-container">
+      <!-- Navigation -->
       <nav>
         <div class="logo">
           <img src="media/cryptoflux-logo-white.png" alt="Logo" />
         </div>
-        <div class="menu0">
-          <i class="ri-menu-3-line"></i>
-        </div>
+        <div class="menu0"><i class="ri-menu-3-line"></i></div>
         <ul class="nav-links">
           <li><a href="home.html">Home</a></li>
           <li><a href="market.html" class="active">Market</a></li>
@@ -29,6 +32,7 @@
         </ul>
       </nav>
 
+      <!-- Content -->
       <div class="content-wrap">
         <div class="tab">
           <button class="tablinks" onclick="openTab(event, 'MarketData')">
@@ -52,6 +56,7 @@
                 <th>Spread</th>
                 <th>Volume</th>
                 <th>Tick Volume</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -68,6 +73,11 @@
                 <td>4.65</td>
                 <td>1234</td>
                 <td>9821</td>
+                <td>
+                  <button class="viewBtn" onclick="openGraphModal('BTC/USD')">
+                    View
+                  </button>
+                </td>
               </tr>
               <tr>
                 <td>ETH/USD</td>
@@ -82,6 +92,11 @@
                 <td>1.22</td>
                 <td>5421</td>
                 <td>10432</td>
+                <td>
+                  <button class="viewBtn" onclick="openGraphModal('ETH/USD')">
+                    View
+                  </button>
+                </td>
               </tr>
               <tr>
                 <td>XRP/USD</td>
@@ -96,6 +111,11 @@
                 <td>0.003</td>
                 <td>90421</td>
                 <td>15324</td>
+                <td>
+                  <button class="viewBtn" onclick="openGraphModal('XRP/USD')">
+                    View
+                  </button>
+                </td>
               </tr>
               <tr>
                 <td>LTC/USD</td>
@@ -110,6 +130,11 @@
                 <td>0.27</td>
                 <td>7123</td>
                 <td>9623</td>
+                <td>
+                  <button class="viewBtn" onclick="openGraphModal('LTC/USD')">
+                    View
+                  </button>
+                </td>
               </tr>
               <tr>
                 <td>BNB/USD</td>
@@ -124,12 +149,18 @@
                 <td>0.65</td>
                 <td>1324</td>
                 <td>8321</td>
+                <td>
+                  <button class="viewBtn" onclick="openGraphModal('BNB/USD')">
+                    View
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
+      <!-- Footer -->
       <footer class="footer">
         <div class="footer-container">
           <div class="footer-section footer-left">
@@ -170,21 +201,46 @@
       </footer>
     </div>
 
+    <!-- ================= GRAPH MODAL ================= -->
+    <div id="graphModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeGraphModal()">&times;</span>
+
+        <h2 id="modalTitle"></h2>
+
+        <!-- Time Range Buttons -->
+        <div class="time-buttons">
+          <button onclick="setTimeframe('1m')" id="btn1m">1m</button>
+          <button onclick="setTimeframe('5m')" id="btn5m">5m</button>
+          <button onclick="setTimeframe('15m')" id="btn15m">15m</button>
+        </div>
+
+        <canvas id="graphCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- ================= JS SECTION ================= -->
     <script>
-      // ----------------- Tabs -----------------
+      const previousPrices = {};
+      const history = {};
+      let simulationInterval = null;
+      let chartInstance = null;
+      let currentTicker = null;
+      let currentTimeframe = "15m";
+
+      /* ---------------- TABS ---------------- */
       function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-          tabcontent[i].style.display = "none";
-        }
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-          tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
+        document.querySelectorAll(".tabcontent").forEach((tab) => {
+          tab.style.display = "none";
+        });
+        document.querySelectorAll(".tablinks").forEach((btn) => {
+          btn.classList.remove("active");
+        });
         document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
+        evt.currentTarget.classList.add("active");
       }
+
+      /* ---------------- NAV MENU ---------------- */
       document.addEventListener("DOMContentLoaded", function () {
         document.querySelector(".tablinks").click();
         const menuButton = document.querySelector(".menu0");
@@ -195,19 +251,33 @@
           );
         }
       });
-    </script>
 
-    <script>
-      // ----------------- Socket.IO + Simulation -----------------
-      const previousPrices = {};
-      let simulationInterval = null;
+      /* ---------------- CELL UPDATE ---------------- */
+      function updateCell(cell, oldValue, newValue) {
+        const arrowUp = "▲",
+          arrowDown = "▼";
+        let color = "black",
+          arrow = "";
+        if (newValue > oldValue) {
+          color = "blue";
+          arrow = arrowUp;
+        } else if (newValue < oldValue) {
+          color = "red";
+          arrow = arrowDown;
+        }
+        cell.textContent = `${newValue.toFixed(2)} ${arrow}`;
+        cell.style.color = color;
+        cell.classList.remove("flash");
+        void cell.offsetWidth;
+        cell.classList.add("flash");
+      }
 
+      /* ---------------- SIMULATION ---------------- */
       function updatePrices() {
         document.querySelectorAll("tbody tr").forEach((row) => {
           const symbol = row.children[0].textContent;
           const bidCell = row.querySelector(".bid");
           const askCell = row.querySelector(".ask");
-
           const oldBid =
             previousPrices[symbol]?.bid || parseFloat(bidCell.textContent);
           const oldAsk =
@@ -224,57 +294,26 @@
           updateCell(askCell, oldAsk, newAsk);
 
           previousPrices[symbol] = { bid: newBid, ask: newAsk };
+
+          if (!history[symbol]) history[symbol] = [];
+          history[symbol].push({
+            time: new Date().toLocaleTimeString(),
+            bid: newBid,
+            ask: newAsk,
+            timestamp: Date.now(),
+          });
+          if (history[symbol].length > 500) history[symbol].shift();
+
+          updateChart(symbol);
         });
       }
 
-      /*function updateCell(cell, oldValue, newValue) {
-        const arrowUp = "▲";
-        const arrowDown = "▼";
-
-        if (newValue > oldValue) {
-          cell.innerHTML = `<span style="color: blue;">${newValue} <span>${arrowUp}</span></span>`;
-        } else if (newValue < oldValue) {
-          cell.innerHTML = `<span style="color: red;">${newValue} <span>${arrowDown}</span></span>`;
-        } else {
-          cell.textContent = newValue;
-          cell.style.color = "black"; // normal black text if unchanged
-        }
-      }*/
-
-      function updateCell(cell, oldValue, newValue) {
-        const arrowUp = "▲";
-        const arrowDown = "▼";
-
-        // Calculate the color & arrow
-        let color = "black";
-        let arrow = "";
-
-        if (newValue > oldValue) {
-          color = "blue";
-          arrow = arrowUp;
-        } else if (newValue < oldValue) {
-          color = "red";
-          arrow = arrowDown;
-        }
-
-        // Only update the text, not the entire HTML
-        cell.textContent = `${newValue.toFixed(2)} ${arrow}`;
-        cell.style.color = color;
-
-        // Optional: Add a subtle highlight flash for change
-        cell.classList.remove("flash");
-        void cell.offsetWidth; // restart CSS animation
-        cell.classList.add("flash");
-      }
-
       function startSimulation() {
-        if (!simulationInterval) {
+        if (!simulationInterval)
           simulationInterval = setInterval(updatePrices, 2000);
-          console.log("Simulation started (Socket.IO not connected)");
-        }
       }
 
-      // Socket.IO connection
+      /* ---------------- SOCKET.IO ---------------- */
       let socket;
       try {
         socket = io.connect("https://evolving-ghastly-rabbit.ngrok-free.app", {
@@ -282,7 +321,7 @@
         });
 
         socket.on("connect", () => {
-          console.log("Socket.IO connected, using real-time updates");
+          console.log("Socket.IO connected");
           if (simulationInterval) {
             clearInterval(simulationInterval);
             simulationInterval = null;
@@ -290,19 +329,17 @@
         });
 
         socket.on("connect_error", () => {
-          console.warn(
-            "Socket.IO connection failed, falling back to simulation"
-          );
+          console.warn("Socket.IO connection failed, fallback to simulation");
           startSimulation();
         });
 
         socket.on("disconnect", () => {
-          console.warn("Socket.IO disconnected, falling back to simulation");
+          console.warn("Socket.IO disconnected, fallback to simulation");
           startSimulation();
         });
 
         socket.on("On_Market_Data_Update", (data) => {
-          const existingRow = document.getElementById(data.ticker);
+          let existingRow = document.getElementById(data.ticker);
           if (!existingRow) {
             const newRow = document.createElement("tr");
             newRow.id = data.ticker;
@@ -338,15 +375,23 @@
             tickVolumeCell.textContent = data.tick_volume;
             newRow.appendChild(tickVolumeCell);
 
+            const actionCell = document.createElement("td");
+            const btn = document.createElement("button");
+            btn.className = "viewBtn";
+            btn.textContent = "View";
+            btn.onclick = () => openGraphModal(data.ticker);
+            actionCell.appendChild(btn);
+            newRow.appendChild(actionCell);
+
             document
               .querySelector("#marketDataTable tbody")
               .appendChild(newRow);
           } else {
             const cells = existingRow.cells;
-            cells[1].textContent = data.time;
             const prevBid = parseFloat(cells[2].textContent);
             const prevAsk = parseFloat(cells[3].textContent);
 
+            cells[1].textContent = data.time;
             cells[2].textContent = data.bid.toFixed(2);
             cells[3].textContent = data.ask.toFixed(2);
             cells[4].textContent = data.last.toFixed(2);
@@ -360,6 +405,16 @@
 
             cells[2].style.color = data.bid < prevBid ? "red" : "blue";
             cells[3].style.color = data.ask < prevAsk ? "red" : "blue";
+
+            if (!history[data.ticker]) history[data.ticker] = [];
+            history[data.ticker].push({
+              time: data.time,
+              bid: data.bid,
+              ask: data.ask,
+              timestamp: Date.now(),
+            });
+            if (history[data.ticker].length > 500) history[data.ticker].shift();
+            updateChart(data.ticker);
           }
         });
       } catch (error) {
@@ -370,6 +425,95 @@
       setTimeout(() => {
         if (!socket || !socket.connected) startSimulation();
       }, 3000);
+
+      /* ---------------- CHART FUNCTIONS ---------------- */
+      function filterHistory(ticker) {
+        const full = history[ticker] || [];
+        const minutesMap = { "1m": 1, "5m": 5, "15m": 15 };
+        const cutoff = Date.now() - minutesMap[currentTimeframe] * 60000;
+        return full.filter((x) => x.timestamp >= cutoff);
+      }
+
+      function updateChart(ticker) {
+        if (currentTicker !== ticker || !chartInstance) return;
+        const filtered = filterHistory(ticker);
+        chartInstance.data.labels = filtered.map((x) => x.time);
+        chartInstance.data.datasets[0].data = filtered.map((x) => x.bid);
+        chartInstance.data.datasets[1].data = filtered.map((x) => x.ask);
+        chartInstance.update();
+      }
+
+      function setTimeframe(tf) {
+        currentTimeframe = tf;
+        document
+          .querySelectorAll(".time-buttons button")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("btn" + tf).classList.add("active");
+        updateChart(currentTicker);
+      }
+
+      function openGraphModal(ticker) {
+        currentTicker = ticker;
+        document.getElementById("modalTitle").textContent =
+          "Bid / Ask History for " + ticker;
+        document.getElementById("graphModal").style.display = "block";
+
+        const ctx = document.getElementById("graphCanvas").getContext("2d");
+        if (chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Bid",
+                data: [],
+                borderWidth: 2,
+                borderColor: "blue",
+              },
+              {
+                label: "Ask",
+                data: [],
+                borderWidth: 2,
+                borderColor: "red",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: {
+              legend: { position: "top" },
+              zoom: {
+                zoom: {
+                  wheel: { enabled: true },
+                  pinch: { enabled: true },
+                  mode: "xy",
+                },
+                pan: { enabled: true, mode: "xy" },
+              },
+            },
+            scales: {
+              x: { title: { display: true, text: "Time" } },
+              y: { title: { display: true, text: "Price" } },
+            },
+          },
+        });
+
+        updateChart(ticker);
+      }
+
+      function closeGraphModal() {
+        document.getElementById("graphModal").style.display = "none";
+        currentTicker = null;
+      }
+
+      window.onclick = (event) => {
+        const modal = document.getElementById("graphModal");
+        if (event.target === modal) closeGraphModal();
+      };
     </script>
   </body>
 </html>
