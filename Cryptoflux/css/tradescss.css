@@ -270,17 +270,35 @@ h2 {
 }
 
 table {
-  border-collapse: collapse;
   width: 100%;
-  background-color: #dfd2d2;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  border-collapse: collapse;
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  color: #000;
+}
+
+thead {
+  background-color: #02a6ff;
+  color: #fff;
+  font-weight: 600;
 }
 
 th,
 td {
-  border: 0.1px solid #000000;
-  padding: 10px;
+  padding: 10px 15px;
   text-align: left;
+}
+
+/* Only horizontal borders */
+tr {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Remove vertical lines */
+td,
+th {
+  border-left: none;
+  border-right: none;
 }
 
 th {
@@ -293,6 +311,17 @@ th {
 td {
   font-size: medium;
   font-family: "Times New Roman", Times, serif;
+  transition: color 0.3s ease;
+}
+
+/* Row background */
+tbody tr {
+  background-color: #f3eeee;
+}
+
+tbody tr:hover {
+  background-color: #eaeaea;
+  transition: 0.2s ease;
 }
 
 /* FOOTER */
@@ -518,4 +547,71 @@ td {
 .btn2:hover {
   background: linear-gradient(90deg, #1a73e8, #4cb2f5);
   transform: translateY(-3px);
+}
+
+/* ===== MODAL & GRAPH STYLES ===== */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background: white;
+  width: 65%;
+  max-height: 80vh;
+  margin: 5% auto;
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+.close {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 28px;
+  cursor: pointer;
+  font-weight: bold;
+}
+#profitGraphCanvas {
+  width: 100% !important;
+  height: 350px !important;
+  flex: 0 0 auto;
+}
+.viewBtn {
+  padding: 5px 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.time-buttons {
+  margin: 10px 0 20px;
+}
+.time-buttons button {
+  padding: 6px 12px;
+  border: none;
+  background: #333;
+  color: #fff;
+  margin-right: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.time-buttons button.active {
+  background: #007bff;
 }
