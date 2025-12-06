@@ -10,7 +10,7 @@
       href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
       rel="stylesheet"
     />
-    <script>
+    <!-- <script>
       function formatDate(date) {
         var year = date.getFullYear();
         var month = (date.getMonth() + 1).toString().padStart(2, "0"); // Add leading zero if needed
@@ -25,99 +25,73 @@
         return [formatDate(twoDaysAgo), formatDate(today)];
       }
 
-      function fetchNews() {
-        displayCards();
-        var apiUrl = "https://mouse-funky-tahr.ngrok-free.app/fetch-news";
-        fetch(apiUrl, {
-          headers: {
-            "ngrok-skip-browser-warning": "69420",
-          },
-        })
-          .then((response) => {
-            if (!response.ok) {
-              alert("Unable to fetch news.");
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            displayNews(data);
-          })
-          .catch((error) => {
-            alert("There was a problem with the News API.");
-            console.error(
-              "There was a problem with the fetch operation:",
-              error
-            );
-          });
-      }
+      
+      // function displayNews(articles) {
+      //   var newsContainer = document.getElementById("newsContainer");
+      //   newsContainer.innerHTML = "";
+      //   var randomArticles = pickArticles(articles);
 
-      function displayNews(articles) {
-        var newsContainer = document.getElementById("newsContainer");
-        newsContainer.innerHTML = "";
-        var randomArticles = pickArticles(articles);
+      //   randomArticles.forEach(function (article) {
+      //     var card = document.createElement("div");
+      //     card.classList.add("card");
+      //     card.innerHTML = `
+      //     <img src="${article.urlToImage}" alt="Article Image">
+      //     <div class="card-content">
+      //       <h2>${article.title}</h2>
+      //       <p>${article.description}</p>
+      //       <div class="meta-info">
+      //         <small>Author: ${article.author}</small>
+      //         <br>
+      //         <small>Published: ${article.publishedAt}</small>
+      //       </div>
+      //       <a href="${article.url}" target="_blank">Read More</a>
+      //     </div>
+      //   `;
 
-        randomArticles.forEach(function (article) {
-          var card = document.createElement("div");
-          card.classList.add("card");
-          card.innerHTML = `
-          <img src="${article.urlToImage}" alt="Article Image">
-          <div class="card-content">
-            <h2>${article.title}</h2>
-            <p>${article.description}</p>
-            <div class="meta-info">
-              <small>Author: ${article.author}</small>
-              <br>
-              <small>Published: ${article.publishedAt}</small>
-            </div>
-            <a href="${article.url}" target="_blank">Read More</a>
-          </div>
-        `;
+      //     // Append card to the container
+      //     newsContainer.appendChild(card);
+      //   });
+      // }
 
-          // Append card to the container
-          newsContainer.appendChild(card);
-        });
-      }
+      // function displayCards() {
+      //   var newsContainer = document.getElementById("newsContainer");
+      //   var randomArticles = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-      function displayCards() {
-        var newsContainer = document.getElementById("newsContainer");
-        var randomArticles = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+      //   randomArticles.forEach(function (article) {
+      //     var card = document.createElement("div");
+      //     card.classList.add("card");
+      //     card.innerHTML = `
+      //     <div class="card-content">
+      //       <h2></h2>
+      //       <p>Loading...</p>
+      //       <div class="meta-info">
+      //         <small>Author: </small>
+      //         <br>
+      //         <small>Published:</small>
+      //       </div>
+      //       <a href="" target="_blank">Read More</a>
+      //     </div>
+      //   `;
+      //     newsContainer.appendChild(card);
+      //   });
+      // }
 
-        randomArticles.forEach(function (article) {
-          var card = document.createElement("div");
-          card.classList.add("card");
-          card.innerHTML = `
-          <div class="card-content">
-            <h2></h2>
-            <p>Loading...</p>
-            <div class="meta-info">
-              <small>Author: </small>
-              <br>
-              <small>Published:</small>
-            </div>
-            <a href="" target="_blank">Read More</a>
-          </div>
-        `;
-          newsContainer.appendChild(card);
-        });
-      }
-
-      function pickArticles(array) {
-        arrArticles = [];
-        for (var i = array.length - 1; i > 0; i--) {
-          var idx = Math.floor(Math.random() * (i + 1));
-          if (array[idx].urlToImage == "" || array[idx].description == "")
-            continue;
-          if (arrArticles.length == 9) return arrArticles;
-          arrArticles.push(array[idx]);
-        }
-        return arrArticles;
-      }
+      // function pickArticles(array) {
+      //   arrArticles = [];
+      //   for (var i = array.length - 1; i > 0; i--) {
+      //     var idx = Math.floor(Math.random() * (i + 1));
+      //     if (array[idx].urlToImage == "" || array[idx].description == "")
+      //       continue;
+      //     if (arrArticles.length == 9) return arrArticles;
+      //     arrArticles.push(array[idx]);
+      //   }
+      //   return arrArticles;
+      // }
 
       document.addEventListener("DOMContentLoaded", function () {
         fetchNews();
       });
-    </script>
+    </script> -->
     <script type="module" src="firebase-script.js"></script>
   </head>
 
@@ -205,54 +179,41 @@
       </footer>
     </div>
     <script>
-      async function loadNews() {
-        // Replace this dummy data with your API later
-        const news = [
-          {
-            cover: "https://source.unsplash.com/800x500/?news",
-            headline: "Global Summit Highlights Climate Concerns",
-            text: "Leaders from around the world met to discuss urgent actions for climate sustainability.",
+      function fetchNews() {
+        var apiUrl = "https://mouse-funky-tahr.ngrok-free.app/fetch-news";
+        fetch(apiUrl, {
+          headers: {
+            "ngrok-skip-browser-warning": "69420",
           },
-          {
-            cover: "https://source.unsplash.com/400x300/?sports",
-            headline: "Pakistan Clinches Series Victory",
-            text: "A thrilling finish led Pakistan to a memorable cricket series win.",
-          },
-          {
-            cover: "https://source.unsplash.com/400x300/?technology",
-            headline: "AI Continues to Revolutionize Tech",
-            text: "Companies are rapidly adopting AI to automate and enhance efficiency.",
-          },
-          {
-            cover: "https://source.unsplash.com/400x300/?business",
-            headline: "Market Sees Unprecedented Growth",
-            text: "Investors are optimistic as stock markets hit record highs.",
-          },
-          {
-            cover: "https://source.unsplash.com/400x300/?education",
-            headline: "Education Policy Brings Reforms",
-            text: "Government introduces new measures to modernize schools nationwide.",
-          },
-          {
-            cover: "https://source.unsplash.com/400x300/?science",
-            headline: "Space Mission Achieves New Milestone",
-            text: "The spacecraft successfully entered orbit, marking a major achievement.",
-          },
-          {
-            cover: "https://source.unsplash.com/400x300/?finance",
-            headline: "Cryptocurrency on the Rise Again",
-            text: "Bitcoin surges past key levels as traders anticipate bullish trends.",
-          },
-          {
-            cover: "https://source.unsplash.com/400x300/?culture",
-            headline: "Festival Brings Communities Together",
-            text: "Colorful performances and traditions mark this year's celebration.",
-          },
-        ];
+        })
+          .then((response) => {
+            if (!response.ok) {
+              alert("Unable to fetch news.");
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("I am here" + data.articles)
+            loadNews(data.articles);
+          })
+          .catch((error) => {
+            alert("There was a problem with the News API.");
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+          });
+      }
 
-        // Display main + side + slider
-        displayTopNews(news.slice(0, 4)); // 1 main + 3 side
-        displaySlider(news.slice(4)); // remaining for slider
+      async function loadNews(data) {
+        
+        // urlToImage empty/null/undefined والے elements remove کرو
+        const filteredData = data.filter(item => item.urlToImage && item.urlToImage.trim() !== "" && item.url && item.url.trim() !== "");
+
+        // Display main + side + slider using filtered data
+        displayTopNews(filteredData.slice(0, 4)); // 1 main + 3 side
+        displaySlider(filteredData.slice(4)); // remaining for slider
       }
 
       function displayTopNews(articles) {
@@ -260,24 +221,26 @@
         const sides = articles.slice(1);
 
         document.getElementById("mainArticle").innerHTML = `
-      <img src="${main.cover}" alt="Main Article">
-      <div class="overlay">
-        <h2>${main.headline}</h2>
-        <p>${main.text}</p>
-      </div>
-    `;
+          <div onclick="window.open('${main.url}', '_blank')" style="cursor:pointer;">
+            <img src="${main.urlToImage}" alt="Main Article">
+            <div class="overlay">
+              <h2>${main.title}</h2>
+              <p>${main.content}</p>
+            </div>
+          </div>
+        `;
 
         document.getElementById("sideArticles").innerHTML = sides
           .map(
             (a) => `
-      <div class="side-article">
-        <img src="${a.cover}" alt="">
-        <div class="content">
-          <h4>${a.headline}</h4>
-          <p>${a.text}</p>
-        </div>
-      </div>
-    `
+              <div class="side-article" onclick="window.open('${a.url}', '_blank')" style="cursor:pointer;">
+                <img src="${a.urlToImage}" alt="">
+                <div class="content">
+                  <h4>${a.title}</h4>
+                  <p>${a.content}</p>
+                </div>
+              </div>
+            `
           )
           .join("");
       }
@@ -287,14 +250,14 @@
         slider.innerHTML = articles
           .map(
             (a) => `
-      <div class="slide">
-        <img src="${a.cover}" alt="">
-        <div class="slide-content">
-          <h5>${a.headline}</h5>
-          <p>${a.text}</p>
-        </div>
-      </div>
-    `
+              <div class="slide" onclick="window.open('${a.url}', '_blank')" style="cursor:pointer;">
+                <img src="${a.urlToImage}" alt="">
+                <div class="slide-content">
+                  <h5>${a.title}</h5>
+                  <p>${a.content}</p>
+                </div>
+              </div>
+            `
           )
           .join("");
       }
@@ -305,7 +268,7 @@
         slider.scrollBy({ left: scrollAmount, behavior: "smooth" });
       }
 
-      loadNews();
+      fetchNews();
     </script>
   </body>
 </html>

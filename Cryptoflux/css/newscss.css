@@ -362,7 +362,7 @@ nav {
   left: -50px;
 }
 .next {
-  right: 60px;
+  right: -50px;
 }
 
 @media (max-width: 768px) {
