@@ -12,6 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <script type="module" src="firebase-script.js"></script>
     <script>
       // Tabs
       function openTab(evt, tabName) {
@@ -307,7 +308,7 @@
                 <th>Comment</th>
               </tr>
             </thead>
-            tbody>
+            <tbody>
               <!-- Table rows will be added dynamically here -->
             </tbody>
           </table>
@@ -354,6 +355,33 @@
         </div>
       </footer>
     </div>
+    <!-- Bot Configuration Popup -->
+    <!-- Bot Config Modal -->
+    <div id="configModal" class="modal">
+      <div class="modal-box">
+        <h2>Bot Configuration</h2>
+
+        <label>Stop Loss</label>
+        <input type="number" id="stopLoss" />
+
+        <label>Take Profit</label>
+        <input type="number" id="takeProfit" />
+
+        <label>Max Volume</label>
+        <input type="number" id="maxVolume" />
+
+        <label>Min Volume</label>
+        <input type="number" id="minVolume" />
+
+        <label>Max Trades</label>
+        <input type="number" id="maxTrades" />
+
+        <div class="modal-btns">
+          <button class="btn-cancel btn2">Cancel</button>
+          <button class="btn-done btn2">Done</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Profit Modal -->
     <div id="profitModal" class="modal">
@@ -375,6 +403,21 @@
       let profitChartInstance = null;
       let currentProfitTicket = null;
       let currentTimeframe = 0; // 0 = All
+
+      // Open modal
+      document.getElementById("configButton").onclick = function () {
+        document.getElementById("configModal").style.display = "flex";
+      };
+
+      // Close modal
+      document.querySelector(".btn-cancel").onclick = function () {
+        document.getElementById("configModal").style.display = "none";
+      };
+
+      // Done button (save + close)
+      document.querySelector(".btn-done").onclick = function () {
+        document.getElementById("configModal").style.display = "none";
+      };
 
       // Profit Modal
       function setTimeframe(minutes) {
