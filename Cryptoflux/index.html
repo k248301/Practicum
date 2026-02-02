@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CryptoFlux - Login</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", Arial, sans-serif;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #000;
+      }
+
+      /* 🔹 Background video */
+      video.background-video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+      }
+
+      /* 🔹 Container (bigger + centered content) */
+      .container {
+        width: 40vw;
+        height: 80vh;
+
+        background-color: #f3f3f3;
+        border-radius: 20px;
+        backdrop-filter: blur(8px);
+
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+
+        padding: 3vh 3vw; /* responsive padding */
+        gap: 2vh;
+
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        text-align: center;
+      }
+
+      .container img {
+        width: 22vw;
+        max-width: 300px;
+      }
+
+      .title {
+        font-size: 2.4vw;
+        font-weight: 700;
+        /*font-size: 32px;
+        font-weight: 700;*/
+        margin-bottom: 25px;
+        color: #000;
+      }
+
+      label {
+        font-size: 1.2vw;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 8px;
+        color: #000;
+        text-align: center;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        /*padding: 14px;*/
+        margin-bottom: 25px;
+        border: none;
+        /*border-radius: 10px;*/
+        /*font-size: 16px;*/
+        text-align: left;
+        /*box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);*/
+        outline: none;
+        padding: 1.4vw; /* makes inputs taller */
+        border-radius: 12px;
+        font-size: 1.2vw; /* text inside scales */
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+        border: 1px solid #ddd;
+      }
+
+      input::placeholder {
+        color: #888;
+      }
+
+      input[type="submit"] {
+        /*background: linear-gradient(to right, #02a6ff, #0094f2);
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        width: 100%;
+        padding: 14px;
+        font-size: 17px;*/
+        transition: all 0.3s ease;
+        /*box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);*/
+        width: 100%;
+
+        padding: 1.4vw;
+        border-radius: 12px;
+        font-size: 1.3vw;
+        font-weight: 600;
+
+        background: linear-gradient(90deg, #2289ff, #6ad0ff);
+        color: #fff;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+      }
+
+      input[type="submit"]:hover {
+        /*background: #007ce0;
+        transform: scale(1.02);*/
+        background: linear-gradient(90deg, #1a73e8, #4cb2f5);
+        transform: translateY(-3px);
+      }
+
+      .toggle-link {
+        color: #02a6ff;
+        display: block;
+        /*margin-top: 20px;*/
+        /*font-weight: 500;*/
+        text-decoration: none;
+        transition: 0.3s;
+        font-size: 1.1vw;
+        margin-top: 1vh;
+      }
+
+      .toggle-link:hover {
+        color: #007ce0;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 🔹 Background Video -->
+    <video autoplay muted loop class="background-video">
+      <source src="media/tradingvideo.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+
+    <!-- 🔹 Login Container -->
+    <div class="container">
+      <img src="media/cryptoflux-logo-blue.png" alt="CryptoFlux Logo" />
+      <div class="title" id="form-title">Login</div>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <label>Username</label>
+        <input
+          type="email"
+          class="in-email"
+          placeholder="Enter your email"
+          required
+        />
+
+        <label>Password</label>
+        <input
+          type="password"
+          class="in-password"
+          placeholder="Enter your password"
+          required
+        />
+
+        <input type="submit" value="Login" />
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signup-form" style="display: none">
+        <label>Email</label>
+        <input
+          type="email"
+          class="up-email"
+          placeholder="Enter your email"
+          required
+        />
+
+        <label>Password</label>
+        <input
+          type="password"
+          class="up-password"
+          placeholder="Enter your password"
+          required
+        />
+
+        <label>Confirm Password</label>
+        <input
+          type="password"
+          class="up-confirm-password"
+          placeholder="Confirm your password"
+          required
+        />
+
+        <input type="submit" value="Sign Up" />
+      </form>
+
+      <a class="toggle-link" id="toggle-link">Don't have an account? Signup</a>
+    </div>
+
+    <!-- 🔹 Toggle Script -->
+    <script>
+      document.getElementById("toggle-link").addEventListener("click", () => {
+        const loginForm = document.getElementById("login-form");
+        const signupForm = document.getElementById("signup-form");
+        const toggleLink = document.getElementById("toggle-link");
+        const title = document.getElementById("form-title");
+
+        if (loginForm.style.display === "none") {
+          loginForm.style.display = "block";
+          signupForm.style.display = "none";
+          title.textContent = "Login";
+          toggleLink.textContent = "Don't have an account? Signup";
+        } else {
+          loginForm.style.display = "none";
+          signupForm.style.display = "block";
+          title.textContent = "Sign Up";
+          toggleLink.textContent = "Already have an account? Login";
+        }
+      });
+    </script>
+    <script type="module" src="firebase-script.js"></script>
+  </body>
+</html>
