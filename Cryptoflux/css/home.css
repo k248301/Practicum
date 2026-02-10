@@ -300,85 +300,61 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 3rem;
-  max-width: 1250px;
-  margin: 0 auto;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: auto;
 }
 
 .offer-left {
   flex: 1;
-  padding-right: 100px;
-  margin-right: 10px;
+  display: flex;
+  justify-content: center;
 }
 
 .offer-left img {
-  /*width: 100%;
-    max-width: 800px;
-    height: auto;*/
-  transform: scale(2.2); /* increase number for larger size */
-  transform-origin: center;
-  height: auto;
-  width: 100%;
+  max-width: 550px;
+  object-fit: contain;
 }
 
 .offer-right {
   flex: 1;
   text-align: center;
-  padding-left: 100px;
-}
-
-.offer-right .section-title {
-  color: #0066ff;
-  font-weight: 700;
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
 }
 
 .offer-grid {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2.5rem;
-  /*position: relative;*/
+  gap: 2rem;
 }
 
 .offer-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3rem;
-  /*position: relative;*/
+  gap: 2rem;
 }
 
 .offer-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  font-size: 0.95rem;
   color: #111;
-  font-size: 1rem;
-  font-weight: 500;
+}
+
+/* remove blue underline */
+.offer-item a {
+  text-decoration: none;
+  color: #111;
 }
 
 .offer-item img {
-  width: 60px;
-  margin-bottom: 0.7rem;
+  width: 48px;
 }
 
-/* Dividers */
 .divider-vertical {
-  border-right: 1px solid #007bff;
-  width: 1px;
+  border-right: 1px solid #0066ff33;
   height: 80px;
-  background: #0066ff33;
-}
-
-.divider-horizontal {
-  grid-column: 1 / 4;
-  height: 1px;
-  background: #0066ff33;
-  width: 100%;
-  justify-self: center;
 }
 
 /* Responsive layout */
@@ -396,100 +372,118 @@ nav {
 }
 
 /* FOOTER */
+/* ============================= */
+
 .footer {
   background-color: #0076ea;
   color: white;
-  padding: 30px 40px; /* reduced from 60px 60px */
-  box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.1);
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-}
-
-/* CONTAINER — evenly spaced */
-.footer-container {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center; /* 👈 vertically centers all sections */
-  flex-wrap: wrap;
-  gap: 40px;
+  padding: 25px;
   width: 100%;
 }
 
-/* LEFT SECTION */
-.footer-left {
-  flex: 1 1 300px;
-  text-align: center; /* center logo horizontally */
+.footer-container {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-left,
+.footer-center,
+.footer-right {
+  flex: 1 1 250px;
+  text-align: center;
 }
 
 .footer-logo {
-  height: 60px; /* reduced from 80px */
-  margin-bottom: 5px;
-}
-
-.footer-company-name {
-  color: #e0e0e0;
-  font-size: 13px; /* slightly smaller */
-  margin-top: 5px;
-  font-weight: 500;
-}
-
-/* CENTER SECTION */
-.footer-center {
-  flex: 1 1 300px;
-  text-align: center; /* 👈 center aligns all contact info */
+  height: 50px;
 }
 
 .footer-item {
   display: flex;
-  align-items: center;
-  justify-content: center; /* 👈 centers each row */
-  gap: 10px;
-  margin: 10px 0;
-  font-size: 15px;
-}
-
-.footer-item i {
-  font-size: 22px;
-}
-
-/* RIGHT SECTION */
-.footer-right {
-  flex: 1 1 300px;
-  display: flex;
   justify-content: center;
+  gap: 8px;
+  margin: 5px 0;
+  font-size: 14px;
 }
 
 .footer-icons {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 20px;
+  gap: 12px;
 }
 
-/* Smaller icons */
 .footer-icons a {
   color: white;
   background: rgba(255, 255, 255, 0.15);
-  width: 32px; /* was 40px */
-  height: 32px; /* was 40px */
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 16px; /* smaller icon size */
-  transition: all 0.3s ease;
+  justify-content: center;
 }
 
 .footer-icons a:hover {
   background: white;
   color: #0076ea;
-  transform: translateY(-2px);
 }
 
+/* ============================= */
+/* RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 992px) {
+  .container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .top-news {
+    grid-template-columns: 1fr;
+  }
+
+  .slider-btn {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  nav {
+    padding: 0 1rem;
+    height: 70px;
+  }
+
+  .menu0 {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background: #0076ea;
+    position: absolute;
+    top: 70px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .nav-links.show {
+    display: flex;
+  }
+
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .main-article img {
+    height: 280px;
+  }
+
+  .footer-container {
+    flex-direction: column;
+  }
+}
 /* RESPONSIVE - compact footer */
 @media (max-width: 900px) {
   .footer-container {
@@ -525,5 +519,147 @@ nav {
 
   .footer {
     padding: 10px 15px; /* minimal padding for compactness */
+  }
+}
+
+/* ============================= */
+/* GLOBAL RESPONSIVE FIXES */
+/* ============================= */
+
+/* Prevent horizontal scroll issues */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Make images responsive everywhere */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fluid container instead of 90% */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  padding: 2rem 1rem;
+}
+
+
+/* ============================= */
+/* NAVIGATION FIX */
+/* ============================= */
+
+@media (max-width: 768px) {
+  nav {
+    padding: 0 1rem;
+    height: 70px;
+  }
+
+  .logo img {
+    height: 40px;
+  }
+}
+
+
+/* ============================= */
+/* HERO SECTION FIX */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .hero-section {
+    height: auto;
+    min-height: 50vh;
+    padding: 3rem 1rem;
+  }
+
+  .hero-content {
+    padding: 1rem;
+  }
+
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-content p {
+    font-size: 0.95rem;
+  }
+}
+
+
+/* ============================= */
+/* VISION / MISSION FIX */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .card {
+    min-width: unset;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+
+/* ============================= */
+/* OFFER SECTION — BIGGEST FIX */
+/* ============================= */
+
+.offer-left,
+.offer-right {
+  padding: 0;
+  margin: 0;
+}
+
+/* Remove dangerous scaling */
+.offer-left img {
+  transform: none;
+  max-width: 100%;
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+  .offer-container {
+    gap: 2rem;
+    padding: 0 1rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .offer {
+    padding: 2rem 1rem;
+  }
+
+  .offer-row {
+    gap: 1.5rem;
+  }
+
+  .offer-item img {
+    width: 50px;
+  }
+}
+
+
+/* ============================= */
+/* TYPOGRAPHY SCALING */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 1.6rem;
+  }
+
+  body {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.4rem;
+  }
+
+  .hero-btn {
+    padding: 0.7rem 1.4rem;
+    font-size: 0.9rem;
   }
 }

@@ -44,7 +44,7 @@ if (signupForm) {
 
     // 🔹 Check if passwords match
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      showError("Passwords do not match!");
       return;
     }
 
@@ -54,7 +54,7 @@ if (signupForm) {
         window.location.href = "index.html";
       })
       .catch((error) => {
-        alert(error.message);
+        showError(error.message);
         console.error(error);
       });
   });
@@ -75,7 +75,7 @@ if (loginForm) {
         window.location.href = "home.html";
       })
       .catch((error) => {
-        alert(error.message);
+        showError(error.message);
         console.error(error);
       });
   });
@@ -137,6 +137,19 @@ function checkAuth() {
 
     console.log("User authenticated — staying on this page.");
   });
+}
+
+function showError(message) {
+  const box = document.getElementById("error-box");
+  const text = document.getElementById("error-message");
+
+  text.textContent = message;
+  box.classList.add("show");
+
+  // Auto hide after 4 seconds (optional)
+  setTimeout(() => {
+    box.classList.remove("show");
+  }, 4000);
 }
 
 window.onload = checkAuth;
