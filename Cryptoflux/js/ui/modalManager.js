@@ -102,6 +102,25 @@ class ModalManager {
   }
 
   /**
+   * Save configuration
+   */
+  saveConfig() {
+    if (!this.modals.config) return;
+
+    const config = {
+      stopLoss: parseFloat(document.getElementById("stopLoss")?.value || 0),
+      takeProfit: parseFloat(document.getElementById("takeProfit")?.value || 0),
+      maxVolume: parseFloat(document.getElementById("maxVolume")?.value || 0),
+      minVolume: parseFloat(document.getElementById("minVolume")?.value || 0),
+      maxTrades: parseInt(document.getElementById("maxTrades")?.value || 0, 10),
+    };
+
+    if (this.onConfigSave) {
+      this.onConfigSave(config);
+    }
+  }
+
+  /**
    * Set callback for config save
    * @param {Function} callback - Callback function
    */
