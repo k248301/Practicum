@@ -5,120 +5,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crypto Flux - Trending News</title>
-
+  <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/newscss.css" />
+  <link rel="stylesheet" href="css/toast.css" />
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
-  <!-- <script>
-      function formatDate(date) {
-        var year = date.getFullYear();
-        var month = (date.getMonth() + 1).toString().padStart(2, "0"); // Add leading zero if needed
-        var day = date.getDate().toString().padStart(2, "0"); // Add leading zero if needed
-        return year + "-" + month + "-" + day;
-      }
-
-      function getDates() {
-        var today = new Date();
-        var twoDaysAgo = new Date(today);
-        twoDaysAgo.setDate(today.getDate() - 2);
-        return [formatDate(twoDaysAgo), formatDate(today)];
-      }
-
-      
-      // function displayNews(articles) {
-      //   var newsContainer = document.getElementById("newsContainer");
-      //   newsContainer.innerHTML = "";
-      //   var randomArticles = pickArticles(articles);
-
-      //   randomArticles.forEach(function (article) {
-      //     var card = document.createElement("div");
-      //     card.classList.add("card");
-      //     card.innerHTML = `
-      //     <img src="${article.urlToImage}" alt="Article Image">
-      //     <div class="card-content">
-      //       <h2>${article.title}</h2>
-      //       <p>${article.description}</p>
-      //       <div class="meta-info">
-      //         <small>Author: ${article.author}</small>
-      //         <br>
-      //         <small>Published: ${article.publishedAt}</small>
-      //       </div>
-      //       <a href="${article.url}" target="_blank">Read More</a>
-      //     </div>
-      //   `;
-
-      //     // Append card to the container
-      //     newsContainer.appendChild(card);
-      //   });
-      // }
-
-      // function displayCards() {
-      //   var newsContainer = document.getElementById("newsContainer");
-      //   var randomArticles = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-      //   randomArticles.forEach(function (article) {
-      //     var card = document.createElement("div");
-      //     card.classList.add("card");
-      //     card.innerHTML = `
-      //     <div class="card-content">
-      //       <h2></h2>
-      //       <p>Loading...</p>
-      //       <div class="meta-info">
-      //         <small>Author: </small>
-      //         <br>
-      //         <small>Published:</small>
-      //       </div>
-      //       <a href="" target="_blank">Read More</a>
-      //     </div>
-      //   `;
-      //     newsContainer.appendChild(card);
-      //   });
-      // }
-
-      // function pickArticles(array) {
-      //   arrArticles = [];
-      //   for (var i = array.length - 1; i > 0; i--) {
-      //     var idx = Math.floor(Math.random() * (i + 1));
-      //     if (array[idx].urlToImage == "" || array[idx].description == "")
-      //       continue;
-      //     if (arrArticles.length == 9) return arrArticles;
-      //     arrArticles.push(array[idx]);
-      //   }
-      //   return arrArticles;
-      // }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        fetchNews();
-      });
-    </script> -->
   <script type="module" src="firebase-script.js"></script>
 </head>
 
-<body>
+<body data-page="news">
   <div class="page-container">
-    <nav>
-      <div class="logo">
-        <img src="media/cryptoflux-logo-white.png" alt="Logo" />
-      </div>
+    <!-- Header Component (loaded dynamically) -->
+    <div id="header"></div>
 
-      <button class="menu0" aria-label="Toggle navigation">
-        <i class="ri-menu-3-line"></i>
-      </button>
-
-      <ul class="nav-links">
-        <li><a href="home.html">Home</a></li>
-        <li><a href="market.html">Market</a></li>
-        <li><a href="news.html" class="active">News</a></li>
-        <li><a href="trades.html">Trades</a></li>
-        <li><button class="btn1" id="logout-button">Logout</button></li>
-      </ul>
-    </nav>
     <div class="content-wrap">
-      <!--<div class="container">
-          <div class="container" id="newsContainer">-->
-      <!-- News articles will be dynamically added here -->
-      <!--</div>
-        </div>-->
-
       <div class="news-section">
         <div class="top-news">
           <div class="main-article" id="mainArticle"></div>
@@ -134,157 +33,16 @@
         </div>
       </div>
     </div>
-    <footer class="footer">
-      <div class="footer-container">
-        <!-- Left Section -->
-        <div class="footer-section footer-left">
-          <img src="media/cryptoflux-logo-white.png" alt="Ease Bot Logo" class="footer-logo" />
-          <p class="footer-company-name">
-            &copy; 2025 CryptoFlux. All rights reserved.
-          </p>
-        </div>
-        <!-- Center Section -->
-        <div class="footer-section footer-center">
-          <div class="footer-item">
-            <i class="ri-map-pin-2-line"></i>
-            <p>Karachi, Pakistan</p>
-          </div>
-          <div class="footer-item">
-            <i class="ri-phone-line"></i>
-            <p>+92 336 386 6753</p>
-          </div>
-          <div class="footer-item">
-            <i class="ri-mail-line"></i>
-            <p>
-              <a href="mailto:practicum@nu.edu.pk">practicum@nu.edu.pk</a>
-            </p>
-          </div>
-        </div>
-        <!-- Right Section -->
-        <div class="footer-section footer-right">
-          <div class="footer-icons">
-            <a href="#"><i class="ri-facebook-circle-fill"></i></a>
-            <a href="#"><i class="ri-twitter-x-fill"></i></a>
-            <a href="#"><i class="ri-linkedin-box-fill"></i></a>
-            <a href="#"><i class="ri-github-fill"></i></a>
-          </div>
-        </div>
-      </div>
-    </footer>
+
+    <!-- Footer Component (loaded dynamically) -->
+    <div id="footer"></div>
   </div>
-  <script>
-    function fetchNews() {
-      var apiUrl = "https://mouse-funky-tahr.ngrok-free.app/fetch-news";
-      fetch(apiUrl, {
-        headers: {
-          "ngrok-skip-browser-warning": "69420",
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            alert("Unable to fetch news.");
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("I am here" + data.articles)
-          loadNews(data.articles);
-        })
-        .catch((error) => {
-          alert("There was a problem with the News API.");
-          console.error(
-            "There was a problem with the fetch operation:",
-            error
-          );
-        });
-    }
 
-    async function loadNews(data) {
+  <!-- Initialize page (load header/footer) -->
+  <script type="module" src="js/page-init.js"></script>
 
-      const filteredData = data.filter(item => item.urlToImage && item.urlToImage.trim() !== "" && item.url && item.url.trim() !== "");
-
-      // Display main + side + slider using filtered data
-      displayTopNews(filteredData.slice(0, 4)); // 1 main + 3 side
-      displaySlider(filteredData.slice(4)); // remaining for slider
-    }
-    
-    function displayTopNews(articles) {
-      if (!articles || articles.length === 0) return;
-
-      const main = articles[0];
-      const sides = articles.slice(1);
-
-      // Truncate main content to 150 chars
-      let mainContent = main.content || "";
-      if (mainContent.length > 150) {
-        mainContent = mainContent.substring(0, 150) + "...";
-      }
-
-      document.getElementById("mainArticle").innerHTML = `
-    <div onclick="window.open('${main.url}', '_blank')" style="cursor:pointer;">
-      <img src="${main.urlToImage}" alt="Main Article">
-      <div class="overlay">
-        <h2>${main.title}</h2>
-        <p>${mainContent}</p>
-      </div>
-    </div>
-  `;
-
-      document.getElementById("sideArticles").innerHTML = sides
-        .map((a) => {
-          // Truncate side content to 80 chars
-          let sideContent = a.content || "";
-          if (sideContent.length > 80) {
-            sideContent = sideContent.substring(0, 80) + "...";
-          }
-
-          return `
-        <div class="side-article" onclick="window.open('${a.url}', '_blank')" style="cursor:pointer;">
-          <img src="${a.urlToImage}" alt="">
-          <div class="content">
-            <h4>${a.title}</h4>
-            <p>${sideContent}</p>
-          </div>
-        </div>
-      `;
-        })
-        .join("");
-    }
-
-    function displaySlider(articles) {
-      const slider = document.getElementById("slider");
-
-      slider.innerHTML = articles
-        .map((a) => {
-          // Truncate content to 100 characters
-          let content = a.content || "";
-          if (content.length > 100) {
-            content = content.substring(0, 100) + "...";
-          }
-
-          return `
-        <div class="slide" onclick="window.open('${a.url}', '_blank')" style="cursor:pointer;">
-          <img src="${a.urlToImage}" alt="">
-          <div class="slide-content">
-            <h5>${a.title}</h5>
-            <p>${content}</p>
-          </div>
-        </div>
-      `;
-        })
-        .join("");
-    }
-
-
-    function scrollSlider(direction) {
-      const slider = document.getElementById("slider");
-      const scrollAmount = 300 * direction;
-      slider.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-
-    fetchNews();
-  </script>
+  <!-- Load page controller -->
+  <script type="module" src="js/pages/newsPage.js"></script>
 </body>
 
 </html>
