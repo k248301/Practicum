@@ -1,210 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crypto Flux - Home</title>
-    <link rel="stylesheet" href="css/home.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
-      rel="stylesheet"
-    />
-  </head>
 
-  <body>
-    <nav>
-      <div class="logo">
-        <img src="media/cryptoflux-logo-white.png" alt="Logo" />
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Flux - Home</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/toast.css" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+  <script type="module" src="firebase-script.js"></script>
+</head>
 
-      <button class="menu0" aria-label="Toggle navigation">
-        <i class="ri-menu-3-line"></i>
-      </button>
+<body data-page="home">
+  <!-- Header Component (loaded dynamically) -->
+  <div id="header"></div>
 
-      <ul class="nav-links">
-        <li><a href="home.html" class="active">Home</a></li>
-        <li><a href="market.html">Market</a></li>
-        <li><a href="news.html">News</a></li>
-        <li><a href="trades.html">Trades</a></li>
-        <li><button class="btn1" id="logout-button">Logout</button></li>
-      </ul>
-    </nav>
+  <section class="hero-section">
+    <div class="hero-overlay"></div>
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="media/tradingvideo.mp4" type="video/mp4" />
+    </video>
 
-    <section class="hero-section">
-      <div class="hero-overlay"></div>
-      <video autoplay muted loop playsinline class="hero-video">
-        <source src="media/tradingvideo.mp4" type="video/mp4" />
-      </video>
+    <div class="hero-content">
+      <h1>Trade with <span>Confidence</span></h1>
+      <p>
+        Given the fast-paced and volatile nature of the crypto and stocks
+        market, automated trading solutions, such as <b>CryptoFlux</b>, play a
+        crucial role in helping traders navigate the complexities of
+        cryptocurrency trading.
+      </p>
+      <a href="market.html" class="hero-btn">Get Started</a>
+    </div>
+  </section>
 
-      <div class="hero-content">
-        <h1>Trade with <span>Confidence</span></h1>
-        <p>
-          Given the fast-paced and volatile nature of the crypto and stocks
-          market, automated trading solutions, such as <b>CryptoFlux</b>, play a
-          crucial role in helping traders navigate the complexities of
-          cryptocurrency trading.
-        </p>
-        <a href="market.html" class="hero-btn">Get Started</a>
-      </div>
-    </section>
-
-    <section class="vision-mission">
-      <div class="container">
-        <h2 class="section-title">Vision and Mission</h2>
-        <div class="cards">
-          <div class="card">
-            <img
-              src="media/intelligent-trading.svg"
-              alt="Intelligent Trading"
-            />
-            <h3>Empowering Intelligent<br />Trading</h3>
-            <p>
-              CryptoFlux envisions a future where every trader has access to
-              AI-powered insights, automation, and real-time analytics to make
-              smarter trading decisions.
-            </p>
-          </div>
-          <div class="divider"></div>
-          <div class="card">
-            <img
-              src="media/financial-automation.svg"
-              alt="Financial Automation"
-            />
-            <h3>Driving Innovation in Financial<br />Automation</h3>
-            <p>
-              From smart algorithms to adaptive strategies, our goal is to
-              simplify complex market behavior and deliver tools that help users
-              trade efficiently, confidently, and profitably.
-            </p>
-          </div>
-          <div class="divider"></div>
-          <div class="card">
-            <img src="media/transparency.svg" alt="Transparency" />
-            <h3>Building Trust Through<br />Transparency</h3>
-            <p>
-              We aim to redefine how users interact with trading technology by
-              ensuring every transaction, strategy, and execution is backed by
-              verifiable transparency.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="offer">
-      <div class="offer-container">
-        <!-- LEFT SIDE -->
-        <div class="offer-left">
-          <img
-            src="media/trading-illustration.png"
-            alt="Trading Illustration"
-          />
-        </div>
-
-        <!-- RIGHT SIDE -->
-        <div class="offer-right">
-          <h2 class="section-title">What we offer?</h2>
-
-          <div class="offer-grid">
-            <!-- Top row -->
-            <div class="offer-row">
-              <div class="offer-item">
-                <a href="market.html">
-                  <img src="media/market-data.svg" alt="Market Data" />
-                  <p>Real Time Market<br />Data</p>
-                </a>
-              </div>
-              <div class="divider-vertical"></div>
-              <div class="offer-item">
-                <a href="news.html">
-                  <img src="media/news.svg" alt="News for Crypto" />
-                  <p>News for Crypto<br />currencies</p>
-                </a>
-              </div>
-              <div class="divider-vertical"></div>
-              <div class="offer-item">
-                <a href="news.html">
-                  <img src="media/trading-bot.svg" alt="Trading Bot" />
-                  <p>Automated<br />Trading Bot</p>
-                </a>
-              </div>
-            </div>
-
-            <!-- Bottom row -->
-            <div class="offer-row">
-              <div class="offer-item">
-                <a href="trades.html">
-                  <img src="media/history.svg" alt="Active Trades" />
-                  <p>Active and History<br />Trades</p>
-                </a>
-              </div>
-              <div class="divider-vertical"></div>
-              <div class="offer-item">
-                <a href="trades.html">
-                  <img src="media/configuration.svg" alt="Bot Configuration" />
-                  <p>Trading Bot<br />Configuration</p>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="footer">
-      <div class="footer-container">
-        <!-- Left Section -->
-        <div class="footer-section footer-left">
-          <img
-            src="media/cryptoflux-logo-white.png"
-            alt="Ease Bot Logo"
-            class="footer-logo"
-          />
-          <p class="footer-company-name">
-            &copy; 2025 CryptoFlux. All rights reserved.
+  <section class="vision-mission">
+    <div class="container">
+      <h2 class="section-title">Vision and Mission</h2>
+      <div class="cards">
+        <div class="card">
+          <img src="media/intelligent-trading.svg" alt="Intelligent Trading" />
+          <h3>Empowering Intelligent<br />Trading</h3>
+          <p>
+            CryptoFlux envisions a future where every trader has access to
+            AI-powered insights, automation, and real-time analytics to make
+            smarter trading decisions.
           </p>
         </div>
-        <!-- Center Section -->
-        <div class="footer-section footer-center">
-          <div class="footer-item">
-            <i class="ri-map-pin-2-line"></i>
-            <p>Karachi, Pakistan</p>
-          </div>
-          <div class="footer-item">
-            <i class="ri-phone-line"></i>
-            <p>+92 336 386 6753</p>
-          </div>
-          <div class="footer-item">
-            <i class="ri-mail-line"></i>
-            <p>
-              <a href="mailto:practicum@nu.edu.pk">practicum@nu.edu.pk</a>
-            </p>
-          </div>
+        <div class="divider"></div>
+        <div class="card">
+          <img src="media/financial-automation.svg" alt="Financial Automation" />
+          <h3>Driving Innovation in Financial<br />Automation</h3>
+          <p>
+            From smart algorithms to adaptive strategies, our goal is to
+            simplify complex market behavior and deliver tools that help users
+            trade efficiently, confidently, and profitably.
+          </p>
         </div>
-        <!-- Right Section -->
-        <div class="footer-section footer-right">
-          <div class="footer-icons">
-            <a href="#"><i class="ri-facebook-circle-fill"></i></a>
-            <a href="#"><i class="ri-twitter-x-fill"></i></a>
-            <a href="#"><i class="ri-linkedin-box-fill"></i></a>
-            <a href="#"><i class="ri-github-fill"></i></a>
+        <div class="divider"></div>
+        <div class="card">
+          <img src="media/transparency.svg" alt="Transparency" />
+          <h3>Building Trust Through<br />Transparency</h3>
+          <p>
+            We aim to redefine how users interact with trading technology by
+            ensuring every transaction, strategy, and execution is backed by
+            verifiable transparency.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="offer">
+    <div class="offer-container">
+      <!-- LEFT SIDE -->
+      <div class="offer-left">
+        <img src="media/trading-illustration.png" alt="Trading Illustration" />
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div class="offer-right">
+        <h2 class="section-title">What we offer?</h2>
+
+        <div class="offer-grid">
+          <!-- Top row -->
+          <div class="offer-row">
+            <div class="offer-item">
+              <a href="market.html">
+                <img src="media/market-data.svg" alt="Market Data" />
+                <p>Real Time Market<br />Data</p>
+              </a>
+            </div>
+            <div class="divider-vertical"></div>
+            <div class="offer-item">
+              <a href="news.html">
+                <img src="media/news.svg" alt="News for Crypto" />
+                <p>News for Crypto<br />currencies</p>
+              </a>
+            </div>
+            <div class="divider-vertical"></div>
+            <div class="offer-item">
+              <a href="news.html">
+                <img src="media/trading-bot.svg" alt="Trading Bot" />
+                <p>Automated<br />Trading Bot</p>
+              </a>
+            </div>
+          </div>
+
+          <!-- Bottom row -->
+          <div class="offer-row">
+            <div class="offer-item">
+              <a href="trades.html">
+                <img src="media/history.svg" alt="Active Trades" />
+                <p>Active and History<br />Trades</p>
+              </a>
+            </div>
+            <div class="divider-vertical"></div>
+            <div class="offer-item">
+              <a href="trades.html">
+                <img src="media/configuration.svg" alt="Bot Configuration" />
+                <p>Trading Bot<br />Configuration</p>
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </footer>
+    </div>
+  </section>
 
-    <script type="module" src="firebase-script.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const menuButton = document.querySelector(".menu0");
-        const navLinks = document.querySelector(".nav-links");
+  <!-- Footer Component (loaded dynamically) -->
+  <div id="footer"></div>
 
-        if (menuButton && navLinks) {
-          menuButton.addEventListener("click", () => {
-            navLinks.classList.toggle("show");
-          });
-        }
-      });
-    </script>
-  </body>
+  <!-- Initialize page (load header/footer) -->
+  <script type="module" src="js/page-init.js"></script>
+</body>
+
 </html>
