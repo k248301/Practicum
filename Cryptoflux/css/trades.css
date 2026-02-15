@@ -499,6 +499,7 @@ tbody tr:hover {
   padding: 14px 16px;
   transition: 0.3s;
   font-size: 17px;
+  color: #2e89e3;
 }
 
 .tab button:hover {

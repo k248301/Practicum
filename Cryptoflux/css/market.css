@@ -1,3 +1,7 @@
+/* ===================================== */
+/* MARKET PAGE - Specific Styles Only */
+/* ===================================== */
+
 /* HEAD */
 /** GENERAL **/
 * {
@@ -143,9 +147,12 @@ nav {
   width: 90%;
   background-color: #000000;
   margin-bottom: -3rem;
-  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
-    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
-    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  box-shadow:
+    rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px,
+    rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px,
+    rgba(0, 0, 0, 0.09) 0px -3px 5px;
   display: flex;
   /* justify-content: center;
     align-items: center; */
@@ -487,14 +494,26 @@ tbody tr:hover {
   color: white;
 }
 
-/*flash {
-  animation: flashAnim 0.5s;
+/* Chart Canvas */
+#graphCanvas {
+  width: 100%;
+  height: 400px;
+  margin-top: 1rem;
 }
-@keyframes flashAnim {
-  from {
-    background-color: yellow;
-  }
-  to {
-    background-color: transparent;
-  }
-}*/
+
+.modal-content canvas {
+  margin-top: 1rem;
+}
+
+/* Price color indicators (specific to market page) */
+.price-up {
+  color: #2196f3 !important;
+  /* Blue for price increase */
+  font-weight: bold;
+}
+
+.price-down {
+  color: #f44336 !important;
+  /* Red for price decrease */
+  font-weight: bold;
+}

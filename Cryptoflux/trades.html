@@ -1,579 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crypto Flux - Trades</title>
-    <link rel="stylesheet" href="css/tradescss.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
-      rel="stylesheet"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
-    <script type="module" src="firebase-script.js"></script>
-    <script>
-      // Tabs
-      function openTab(evt, tabName) {
-        document
-          .querySelectorAll(".tabcontent")
-          .forEach((t) => (t.style.display = "none"));
-        document
-          .querySelectorAll(".tablinks")
-          .forEach((b) => b.classList.remove("active"));
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.classList.add("active");
-      }
 
-      document.addEventListener("DOMContentLoaded", () =>
-        document.querySelector(".tablinks").click()
-      );
-      function signalBot() {
-        var apiUrl;
-        var btnBot = document.getElementById("botButton");
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Flux - Trades</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/trades.css" />
+  <link rel="stylesheet" href="css/toast.css" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+  <script type="module" src="firebase-script.js"></script>
+</head>
 
-        if (btnBot.textContent == "Start Bot") {
-          apiUrl = "https://mouse-funky-tahr.ngrok-free.app/start-bot";
-        } else {
-          apiUrl = "https://mouse-funky-tahr.ngrok-free.app/stop-bot";
-        }
+<body data-page="trades">
+  <div class="page-container">
+    <!-- Header Component (loaded dynamically) -->
+    <div id="header"></div>
 
-        fetch(apiUrl, {
-          headers: {
-            "ngrok-skip-browser-warning": "69420",
-          },
-        })
-          .then((response) => {
-            if (!response.ok) {
-              alert("Unable to signal bot. Network unstable.");
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            alert(data.Message);
-            if (data.Status == 1) {
-              btnBot.textContent = "Stop Bot";
-            } else {
-              btnBot.textContent = "Start Bot";
-            }
-          })
-          .catch((error) => {
-            alert("There was a problem with the Bot API.");
-            console.error(
-              "There was a problem with the signal operation:",
-              error
-            );
-          });
-      }
-
-      var socket = io.connect("https://evolving-ghastly-rabbit.ngrok-free.app");
-      socket.on("On_Trades_Data_Update", function (data) {
-        updateTrades(data);
-      });
-
-      socket.on("On_History_Data_Update", function (data) {
-        updateHistory(data);
-      });
-
-      // Update trades
-      function updateTrades(data) {
-        let existingRow = document.getElementById(data.ticket);
-        const now = new Date();
-
-        if (!profitHistory[data.ticket]) profitHistory[data.ticket] = [];
-        profitHistory[data.ticket].push({ profit: data.profit, time: now });
-        if (profitHistory[data.ticket].length > 1000)
-          profitHistory[data.ticket].shift();
-
-        if (!existingRow) {
-          let newRow = document.createElement("tr");
-          newRow.id = data.ticket;
-          [
-            "symbol",
-            "ticket",
-            "time",
-            "type",
-            "volume",
-            "tradePrice",
-            "stopLoss",
-            "takeProfit",
-            "price",
-            "profit",
-            "change",
-            "identity",
-          ].forEach((key) => {
-            let td = document.createElement("td");
-            if (key == "type") td.textContent = data.type == 0 ? "Buy" : "Sell";
-            else if (key == "profit") td.textContent = data.profit.toFixed(6);
-            else if (key == "change") td.textContent = data.change.toFixed(2);
-            else td.textContent = data[key];
-            /*if (key == "type")
-              td.style.background = data.type == 0 ? "orange" : "seagreen";*/
-            newRow.appendChild(td);
-          });
-          let graphCell = document.createElement("td");
-          let btn = document.createElement("button");
-          btn.className = "viewBtn";
-          btn.textContent = "View";
-          btn.onclick = () => openProfitModal(data.ticket);
-          graphCell.appendChild(btn);
-          newRow.appendChild(graphCell);
-          document.querySelector("#tradesDataTable tbody").appendChild(newRow);
-        } else {
-          let cells = existingRow.cells;
-          cells[2].textContent = data.time;
-          cells[3].textContent = data.type == 0 ? "Buy" : "Sell";
-          cells[4].textContent = data.volume;
-          cells[5].textContent = data.tradePrice;
-          cells[6].textContent = data.stopLoss;
-          cells[7].textContent = data.takeProfit;
-          // price column NOT updated
-
-          // Profit column with arrows and color
-          let profitCell = cells[9];
-          let prev = profitCell.previousProfit ?? data.profit;
-          profitCell.previousProfit = data.profit;
-
-          if (data.profit > prev) {
-            profitCell.style.color = "blue";
-            profitCell.innerHTML = `&#9650; ${data.profit.toFixed(6)}`;
-          } else if (data.profit < prev) {
-            profitCell.style.color = "red";
-            profitCell.innerHTML = `&#9660; ${data.profit.toFixed(6)}`;
-          } else {
-            profitCell.style.color = "black";
-            profitCell.innerHTML = data.profit.toFixed(6);
-          }
-
-          cells[10].textContent = data.change.toFixed(2);
-          cells[11].textContent = data.identity;
-        }
-      }
-
-      function updateHistory(data) {
-        if (data.profit == 0 || data.symbol == "") return;
-        var existingRow = document.getElementById("history-" + data.ticket);
-        if (!existingRow) {
-          var newRow = document.createElement("tr");
-          newRow.id = "history-" + data.ticket;
-
-          var symbolCell = document.createElement("td");
-          var ticketCell = document.createElement("td");
-          var timeCell = document.createElement("td");
-          var typeCell = document.createElement("td");
-          var volumeCell = document.createElement("td");
-          var priceCell = document.createElement("td");
-          var commissionCell = document.createElement("td");
-          var swapCell = document.createElement("td");
-          var profitCell = document.createElement("td");
-          var commentCell = document.createElement("td");
-
-          symbolCell.textContent = data.symbol;
-          ticketCell.textContent = data.ticket;
-          timeCell.textContent = data.time;
-          typeCell.textContent = data.type == 0 ? "Buy" : "Sell";
-          volumeCell.textContent = data.volume;
-          priceCell.textContent = data.price.toFixed(2);
-          commissionCell.textContent = data.commission.toFixed(2);
-          swapCell.textContent = data.swap.toFixed(2);
-          profitCell.textContent = data.profit.toFixed(6);
-          commentCell.textContent = data.comment;
-
-          newRow.appendChild(symbolCell);
-          newRow.appendChild(ticketCell);
-          newRow.appendChild(timeCell);
-          newRow.appendChild(typeCell);
-          newRow.appendChild(volumeCell);
-          newRow.appendChild(priceCell);
-          newRow.appendChild(commissionCell);
-          newRow.appendChild(swapCell);
-          newRow.appendChild(profitCell);
-          newRow.appendChild(commentCell);
-
-          typeCell.style.background = data.type == 0 ? "orange" : "seagreen";
-          if (data.reason == 4) priceCell.style.background = "lightpink";
-          else if (data.reason == 5) priceCell.style.background = "lightblue";
-          if (data.profit != 0)
-            profitCell.style.color = data.profit < 0 ? "red" : "blue";
-
-          var tableBody = document.querySelector("#historyDataTable tbody");
-          tableBody.appendChild(newRow);
-        } else {
-          var cells = existingRow.cells;
-          cells[0].textContent = data.symbol;
-          cells[1].textContent = data.ticket;
-          cells[2].textContent = data.time;
-          cells[3].textContent = data.type == 0 ? "Buy" : "Sell";
-          cells[4].textContent = data.volume;
-          cells[5].textContent = data.price.toFixed(6);
-          cells[6].textContent = data.commission.toFixed(6);
-          cells[7].textContent = data.swap.toFixed(6);
-          cells[8].textContent = data.profit.toFixed(6);
-          cells[9].textContent = data.comment;
-        }
-      }
-    </script>
-  </head>
-  <body>
-    <div class="page-container">
-      <!-- Navigation -->
-      <nav>
-        <div class="logo">
-          <img src="media/cryptoflux-logo-white.png" alt="Logo" />
-        </div>
-        <button class="menu0" aria-label="Toggle navigation">
-          <i class="ri-menu-3-line"></i>
+    <!-- Content -->
+    <div class="content-wrap">
+      <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'ActiveTrades')">
+          Active Trades
         </button>
-        <ul class="nav-links">
-          <li><a href="home.html">Home</a></li>
-          <li><a href="market.html">Market</a></li>
-          <li><a href="news.html">News</a></li>
-          <li><a href="trades.html" class="active">Trades</a></li>
-          <li><button class="btn1" id="logout-button">Logout</button></li>
-        </ul>
-      </nav>
+        <button class="tablinks" onclick="openTab(event, 'HistoryData')">
+          History Data
+        </button>
+      </div>
 
-      <!-- Content -->
-      <div class="content-wrap">
-        <div class="tab">
-          <button class="tablinks" onclick="openTab(event, 'ActiveTrades')">
-            Active Trades
+      <!-- Active Trades -->
+      <div id="ActiveTrades" class="tabcontent">
+        <table id="tradesDataTable">
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Ticket</th>
+              <th>Time</th>
+              <th>Type</th>
+              <th>Volume</th>
+              <th>Trade Price</th>
+              <th>S/L</th>
+              <th>T/P</th>
+              <th>Price</th>
+              <th>Profit</th>
+              <th>Change %</th>
+              <th>Identity</th>
+              <th>Profit Graph</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Table rows will be added dynamically here -->
+          </tbody>
+        </table>
+        <div class="bot-actions">
+          <iframe id="hiddenFrame" style="display: none"></iframe>
+          <button id="configButton" class="btn2">Configure Bot</button>
+          <button id="botButton" class="btn2" data-bot-state="stopped">
+            Start Bot
           </button>
-          <button class="tablinks" onclick="openTab(event, 'HistoryData')">
-            History Data
-          </button>
-        </div>
-
-        <!-- Active Trades -->
-        <div id="ActiveTrades" class="tabcontent">
-          <table id="tradesDataTable">
-            <thead>
-              <tr>
-                <th>Symbol</th>
-                <th>Ticket</th>
-                <th>Time</th>
-                <th>Type</th>
-                <th>Volume</th>
-                <th>Trade Price</th>
-                <th>S/L</th>
-                <th>T/P</th>
-                <th>Price</th>
-                <th>Profit</th>
-                <th>Change %</th>
-                <th>Identity</th>
-                <th>Profit Graph</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Table rows will be added dynamically here -->
-            </tbody>
-          </table>
-          <!--<div style="display: flex; justify-content: flex-end">
-            <iframe id="hiddenFrame" style="display: none"></iframe>
-            <button id="botButton" class="btn2" onclick="signalBot()">
-              Start Bot
-            </button>
-          </div>
-          <div style="display: flex; justify-content: flex-end">
-            <iframe id="hiddenFrame" style="display: none"></iframe>
-            <button id="botButton" class="btn2" onclick="signalBot()">
-              Configure Bot
-            </button>
-          </div>-->
-          <div class="bot-actions">
-            <iframe id="hiddenFrame" style="display: none"></iframe>
-            <button id="configButton" class="btn2">Configure Bot</button>
-            <button id="botButton" class="btn2" onclick="signalBot()">
-              Start Bot
-            </button>
-          </div>
-        </div>
-
-        <!-- History Data -->
-        <div id="HistoryData" class="tabcontent">
-          <table id="historyDataTable">
-            <thead>
-              <tr>
-                <th>Symbol</th>
-                <th>Ticket</th>
-                <th>Time</th>
-                <th>Type</th>
-                <th>Volume</th>
-                <th>Price</th>
-                <th>Commission</th>
-                <th>Swap</th>
-                <th>Profit</th>
-                <th>Comment</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Table rows will be added dynamically here -->
-            </tbody>
-          </table>
         </div>
       </div>
 
-      <!-- Footer -->
-      <footer class="footer">
-        <div class="footer-container">
-          <div class="footer-section footer-left">
-            <img
-              src="media/cryptoflux-logo-white.png"
-              alt="Logo"
-              class="footer-logo"
-            />
-            <p class="footer-company-name">
-              &copy; 2025 CryptoFlux. All rights reserved.
-            </p>
-          </div>
-          <div class="footer-section footer-center">
-            <div class="footer-item">
-              <i class="ri-map-pin-2-line"></i>
-              <p>Karachi, Pakistan</p>
-            </div>
-            <div class="footer-item">
-              <i class="ri-phone-line"></i>
-              <p>+92 336 386 6753</p>
-            </div>
-            <div class="footer-item">
-              <i class="ri-mail-line"></i>
-              <p>
-                <a href="mailto:practicum@nu.edu.pk">practicum@nu.edu.pk</a>
-              </p>
-            </div>
-          </div>
-          <div class="footer-section footer-right">
-            <div class="footer-icons">
-              <a href="#"><i class="ri-facebook-circle-fill"></i></a>
-              <a href="#"><i class="ri-twitter-x-fill"></i></a>
-              <a href="#"><i class="ri-linkedin-box-fill"></i></a>
-              <a href="#"><i class="ri-github-fill"></i></a>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
-    <!-- Bot Configuration Popup -->
-    <!-- Bot Config Modal -->
-    <div id="configModal" class="modal">
-      <div class="modal-box">
-        <h2>Bot Configuration</h2>
-
-        <label>Stop Loss</label>
-        <input type="number" id="stopLoss" />
-
-        <label>Take Profit</label>
-        <input type="number" id="takeProfit" />
-
-        <label>Max Volume</label>
-        <input type="number" id="maxVolume" />
-
-        <label>Min Volume</label>
-        <input type="number" id="minVolume" />
-
-        <label>Max Trades</label>
-        <input type="number" id="maxTrades" />
-
-        <div class="modal-btns">
-          <button class="btn-cancel btn2">Cancel</button>
-          <button class="btn-done btn2">Done</button>
-        </div>
+      <!-- History Data -->
+      <div id="HistoryData" class="tabcontent">
+        <table id="historyDataTable">
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Ticket</th>
+              <th>Time</th>
+              <th>Type</th>
+              <th>Volume</th>
+              <th>Price</th>
+              <th>Commission</th>
+              <th>Swap</th>
+              <th>Profit</th>
+              <th>Comment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Table rows will be added dynamically here -->
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- Profit Modal -->
-    <div id="profitModal" class="modal">
-      <div class="modal-content">
-        <span class="close" id="closeProfitModal">&times;</span>
-        <h2 id="profitModalTitle">Profit Graph</h2>
-        <div class="time-buttons">
-          <button onclick="setTimeframe(1)" id="tf1">1m</button>
-          <button onclick="setTimeframe(5)" id="tf5">5m</button>
-          <button onclick="setTimeframe(15)" id="tf15">15m</button>
-          <button onclick="setTimeframe(0)" id="tfAll">All</button>
-        </div>
-        <canvas id="profitGraphCanvas"></canvas>
+    <!-- Footer Component (loaded dynamically) -->
+    <div id="footer"></div>
+  </div>
+
+  <!-- Bot Configuration Modal -->
+  <div id="configModal" class="modal">
+    <div class="modal-box">
+      <h2>Bot Configuration</h2>
+
+      <label>Stop Loss</label>
+      <input type="number" id="stopLoss" />
+
+      <label>Take Profit</label>
+      <input type="number" id="takeProfit" />
+
+      <label>Max Volume</label>
+      <input type="number" id="maxVolume" />
+
+      <label>Min Volume</label>
+      <input type="number" id="minVolume" />
+
+      <label>Max Trades</label>
+      <input type="number" id="maxTrades" />
+
+      <div class="modal-btns">
+        <button class="btn-cancel btn2">Cancel</button>
+        <button class="btn-done btn2">Done</button>
       </div>
     </div>
+  </div>
 
-    <script>
-      let profitHistory = {};
-      let profitChartInstance = null;
-      let currentProfitTicket = null;
-      let currentTimeframe = 0; // 0 = All
+  <!-- Profit Modal -->
+  <div id="profitModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeProfitModal">&times;</span>
+      <h2 id="profitModalTitle">Profit Graph</h2>
+      <div class="time-buttons">
+        <button id="tf1">1m</button>
+        <button id="tf5">5m</button>
+        <button id="tf15">15m</button>
+        <button id="tfAll" class="active">All</button>
+      </div>
+      <canvas id="profitGraphCanvas"></canvas>
+    </div>
+  </div>
 
-      // Open modal
-      document.getElementById("configButton").onclick = function () {
-        document.getElementById("configModal").style.display = "flex";
-      };
+  <!-- Initialize page (load header/footer) -->
+  <script type="module" src="js/page-init.js"></script>
 
-      // Close modal
-      document.querySelector(".btn-cancel").onclick = function () {
-        document.getElementById("configModal").style.display = "none";
-      };
+  <!-- Load page controller -->
+  <script type="module" src="js/pages/tradesPage.js"></script>
+</body>
 
-      // Done button (save + close)
-      document.querySelector(".btn-done").onclick = function () {
-        document.getElementById("configModal").style.display = "none";
-      };
-
-      // Profit Modal
-      function setTimeframe(minutes) {
-        currentTimeframe = minutes;
-        document
-          .querySelectorAll(".time-buttons button")
-          .forEach((b) => b.classList.remove("active"));
-        if (minutes === 0)
-          document.getElementById("tfAll").classList.add("active");
-        else document.getElementById("tf" + minutes).classList.add("active");
-        updateProfitChart();
-      }
-
-      function updateProfitChart() {
-        if (!currentProfitTicket || !profitChartInstance) return;
-        const now = new Date();
-        const allData = profitHistory[currentProfitTicket] || [];
-        let filteredData =
-          currentTimeframe === 0
-            ? allData
-            : allData.filter(
-                (p) => now - p.time <= currentTimeframe * 60 * 1000
-              );
-
-        profitChartInstance.data.labels = filteredData.map((p) =>
-          p.time.toLocaleTimeString()
-        );
-        profitChartInstance.data.datasets[0].data = filteredData.map(
-          (p) => p.profit
-        );
-        profitChartInstance.update("none");
-      }
-
-      function openProfitModal(ticket) {
-        currentProfitTicket = ticket;
-        document.getElementById("profitModalTitle").textContent =
-          "Profit Graph - Ticket " + ticket;
-        document.getElementById("profitModal").style.display = "flex";
-
-        const ctx = document
-          .getElementById("profitGraphCanvas")
-          .getContext("2d");
-        if (profitChartInstance) profitChartInstance.destroy();
-
-        profitChartInstance = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: [],
-            datasets: [
-              {
-                label: "Profit",
-                data: [],
-                borderColor: "cyan",
-                borderWidth: 2,
-                fill: false,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            plugins: {
-              legend: { display: true },
-              tooltip: { enabled: true },
-              zoom: {
-                pan: { enabled: true, mode: "x" },
-                zoom: {
-                  wheel: { enabled: true },
-                  pinch: { enabled: true },
-                  mode: "x",
-                },
-              },
-            },
-            scales: {
-              x: { title: { display: true, text: "Time" } },
-              y: {
-                title: { display: true, text: "Profit" },
-                beginAtZero: true,
-              },
-            },
-          },
-        });
-
-        setTimeframe(0); // default All
-      }
-
-      // Close modal
-      document.getElementById("closeProfitModal").onclick = () => {
-        document.getElementById("profitModal").style.display = "none";
-        currentProfitTicket = null;
-      };
-      window.onclick = (e) => {
-        if (e.target === document.getElementById("profitModal")) {
-          document.getElementById("profitModal").style.display = "none";
-          currentProfitTicket = null;
-        }
-      };
-
-      // Dummy trades
-      const dummyTrades = [
-        {
-          ticket: "1001",
-          symbol: "BTCUSD",
-          time: "12:01:15",
-          type: 0,
-          volume: 0.5,
-          tradePrice: 34000,
-          stopLoss: 33800,
-          takeProfit: 34500,
-          price: 34050,
-          profit: 0,
-          change: 0,
-          identity: "Manual",
-        },
-        {
-          ticket: "1002",
-          symbol: "ETHUSD",
-          time: "12:01:16",
-          type: 1,
-          volume: 1,
-          tradePrice: 2100,
-          stopLoss: 2080,
-          takeProfit: 2150,
-          price: 2090,
-          profit: 0,
-          change: 0,
-          identity: "Manual",
-        },
-        {
-          ticket: "1003",
-          symbol: "LTCUSD",
-          time: "12:01:17",
-          type: 0,
-          volume: 2,
-          tradePrice: 85,
-          stopLoss: 82,
-          takeProfit: 88,
-          price: 84.5,
-          profit: 0,
-          change: 0,
-          identity: "Manual",
-        },
-      ];
-      dummyTrades.forEach(updateTrades);
-
-      // Simulate profit updates
-      setInterval(() => {
-        dummyTrades.forEach((trade) => {
-          trade.profit += (Math.random() - 0.5) * 2;
-          trade.change =
-            ((trade.price - trade.tradePrice) / trade.tradePrice) * 100;
-          updateTrades(trade);
-        });
-        updateProfitChart();
-      }, 1000);
-    </script>
-  </body>
 </html>
