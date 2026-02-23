@@ -6,6 +6,7 @@ from repository import MarketRepository
 class MarketDataService:
     """
     Service layer to coordinate data fetching and broadcasting.
+    Acts as a Facade to the underlying repository and socket handling.
     """
     def __init__(self, repository: MarketRepository, socketio: SocketIO):
         self.repository = repository
@@ -35,21 +36,24 @@ class MarketDataService:
 
     def _run_market_data_loop(self):
         print("[INFO] => Started Market Data Loop")
+        # Default symbols if none specified, or fetch from Config
+        symbols = getattr(Config, 'SYMBOLS', ['BTCUSD', 'ETHUSD'])
         while self.running:
-            data = self.repository.get_market_data(...)
-            # socketio.emit(...)
+            data = self.repository.get_market_data(symbols)
+            if data:
+                self.socketio.emit('On_Market_Data_Update', data)
             time.sleep(1)
 
     def _run_trades_loop(self):
         print("[INFO] => Started Trades Loop")
         while self.running:
             data = self.repository.get_active_trades()
-            # socketio.emit(...)
+            self.socketio.emit('On_Trades_Data_Update', data)
             time.sleep(1)
 
     def _run_history_loop(self):
         print("[INFO] => Started History Loop")
         while self.running:
             data = self.repository.get_history_deals()
-            # socketio.emit(...)
-            time.sleep(2)
+            self.socketio.emit('On_History_Data_Update', data)
+            time.sleep(5) # History doesn't need to be as frequent
