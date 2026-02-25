@@ -1,6 +1,7 @@
 import threading
 import time
 from flask_socketio import SocketIO
+from MarketDataAPI.config import Config
 from repository import MarketRepository
 
 class MarketDataService:

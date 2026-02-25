@@ -1,6 +1,6 @@
+from abc import ABC, abstractmethod
 import MetaTrader5 as mt5
 from config import Config
-import pandas as pd
 
 class MarketRepository(ABC):
     """
