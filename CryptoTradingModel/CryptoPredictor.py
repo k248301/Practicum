@@ -138,21 +138,23 @@ class CryptoRNNModel:
 
     def _build_model(self):
         model = Sequential([
-            LSTM(128, return_sequences=True, input_shape=self.input_shape),
-            Dropout(0.3),
+            Input(shape=self.input_shape),
+            LSTM(256, return_sequences=True),
+            Dropout(0.4),
             BatchNormalization(),
-            LSTM(64, return_sequences=False),
-            Dropout(0.3),
+            LSTM(128, return_sequences=False),
+            Dropout(0.4),
             BatchNormalization(),
-            Dense(32, activation='relu'),
+            Dense(64, activation='relu'),
+            Dropout(0.2),
             Dense(self.num_classes, activation='softmax')
         ])
-        model.compile(optimizer=Adam(learning_rate=0.001), 
+        model.compile(optimizer=Adam(learning_rate=0.0001), 
                       loss='sparse_categorical_crossentropy', 
                       metrics=['accuracy'])
         return model
 
-    def train(self, X_train, y_train, epochs=30, batch_size=64, validation_split=0.1, model_path='multi_crypto_rnn.h5'):
+    def train(self, X_train, y_train, epochs=30, batch_size=32, validation_split=0.2, model_path='multi_crypto_rnn.keras'):
         # Restore best weights at the end of training
         early_stop = tf.keras.callbacks.EarlyStopping(
             monitor='val_loss', 
@@ -191,7 +193,7 @@ class CryptoRNNModel:
 
 class MultiSymbolPipeline:
     """Orchestrator for the training workflow across multiple symbols."""
-    def __init__(self, processor, model_path='multi_crypto_rnn.h5', scaler_path='scaler.pkl'):
+    def __init__(self, processor, model_path='multi_crypto_rnn.keras', scaler_path='scaler.pkl'):
         self.processor = processor
         self.model_path = model_path
         self.scaler_path = scaler_path
@@ -202,20 +204,29 @@ class MultiSymbolPipeline:
         (X_train, y_train), (X_test, y_test) = self.processor.process_all_symbols(data_dir)
         
         print(f"Aggregated Training Samples: {X_train.shape}")
+        
+        # Generate timestamp for filenames
+        timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        base_model, ext_model = os.path.splitext(self.model_path)
+        base_scaler, ext_scaler = os.path.splitext(self.scaler_path)
+        
+        current_model_path = f"{base_model}_{timestamp}{ext_model}"
+        current_scaler_path = f"{base_scaler}_{timestamp}{ext_scaler}"
+
         self.model = CryptoRNNModel(input_shape=(X_train.shape[1], X_train.shape[2]))
-        self.model.train(X_train, y_train, model_path=self.model_path)
+        self.model.train(X_train, y_train, model_path=current_model_path)
         
         print("Evaluating on aggregated test set...")
         self.model.evaluate(X_test, y_test)
         
-        # Save artifacts for inference
-        self.model.save(self.model_path)
-        self.processor.save_scaler(self.scaler_path)
+        # Save artifacts with timestamp
+        self.model.save(current_model_path)
+        self.processor.save_scaler(current_scaler_path)
 
 if __name__ == "__main__":
     DATA_DIRECTORY = '.\\CryptoTradingModel\\RawData'
-    MODEL_FILE = '.\\CryptoTradingModel\\Artifacts\\multi_crypto_rnn.h5'
-    SCALER_FILE = '.\\CryptoTradingModel\\Artifacts\\scaler.pkl'
+    MODEL_FILE = '.\\CryptoTradingModel\\Artifacts\\crypto_predictor.keras'
+    SCALER_FILE = '.\\CryptoTradingModel\\Artifacts\\data_scaler.pkl'
     
     if os.path.exists(DATA_DIRECTORY):
         cryptoDataProcessor = CryptoDataProcessor(sequence_length=30)
