@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import LSTM, Dense, Dropout, BatchNormalization
+from datetime import datetime
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout, BatchNormalization, Input
 from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report
@@ -17,8 +18,12 @@ class CryptoDataProcessor:
         self.horizon = horizon
         self.threshold = threshold
         self.scaler = StandardScaler()
-        # Features available in user CSVs
-        self.features = ['Open', 'High', 'Low', 'Close', 'Volume', 'Marketcap', 'SMA_20', 'SMA_50', 'RSI', 'vol_change']
+        # Expanded features for better market context
+        self.features = [
+            'Open', 'High', 'Low', 'Close', 'Volume', 
+            'SMA_20', 'SMA_50', 'RSI', 'vol_change',
+            'BB_upper', 'BB_lower', 'MACD', 'MACD_signal'
+        ]
 
     def add_indicators(self, df):
         """Adds common technical indicators to a single symbol's dataframe."""
@@ -43,11 +48,22 @@ class CryptoDataProcessor:
         gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
         loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
         
-        # Handle division by zero for RS
         rs = gain / loss.replace(0, np.nan)
-        df['RSI'] = 100 - (100 / (1 + rs.fillna(100))) # loss=0 implies RSI=100
+        df['RSI'] = 100 - (100 / (1 + rs.fillna(100)))
         
-        # Volume Change - replace infinity if volume was 0
+        # Bollinger Bands
+        df['BB_mid'] = df['Close'].rolling(window=20).mean()
+        df['BB_std'] = df['Close'].rolling(window=20).std()
+        df['BB_upper'] = df['BB_mid'] + (df['BB_std'] * 2)
+        df['BB_lower'] = df['BB_mid'] - (df['BB_std'] * 2)
+        
+        # MACD
+        exp1 = df['Close'].ewm(span=12, adjust=False).mean()
+        exp2 = df['Close'].ewm(span=26, adjust=False).mean()
+        df['MACD'] = exp1 - exp2
+        df['MACD_signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
+        
+        # Volume Change
         df['vol_change'] = df['Volume'].pct_change().replace([np.inf, -np.inf], np.nan).fillna(0)
         
         # Final cleanup: Replace any remaining inf with NaN and drop them
