@@ -1,6 +1,6 @@
 from flask import Flask
-from flask_socketio import SocketIO, emit
-from flask_cors import CORS, cross_origin
+from flask_socketio import SocketIO
+from flask_cors import CORS
 from config import Config
 from repository import MT5Repository
 from service import MarketDataService
@@ -26,20 +26,9 @@ class MarketDataApp:
         def handle_connect():
             print("[INFO] Client connected")
 
-        @self.socketio.on('On_Market_Data_Update')
-        @cross_origin()
-        def handle_market_data_update(data):
-            emit('On_Market_Data_Update', data)
-            
-        @self.socketio.on('On_Trades_Data_Update')
-        @cross_origin()
-        def handle_trades_data_update(data):
-            emit('On_Trades_Data_Update', data)
-
-        @self.socketio.on('On_History_Data_Update')
-        @cross_origin()
-        def handle_history_data_update(data):
-            emit('On_History_Data_Update', data)
+        @self.socketio.on('disconnect')
+        def handle_disconnect():
+            print("[INFO] Client disconnected")
 
     def run(self):
         print("[INFO] => Starting Market Data Application (Split Modules)")

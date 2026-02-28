@@ -1,8 +1,9 @@
+from datetime import datetime
 import threading
-import time
+import sys
 from flask_socketio import SocketIO
-from MarketDataAPI.config import Config
 from repository import MarketRepository
+from config import Config
 
 class MarketDataService:
     """
@@ -31,30 +32,41 @@ class MarketDataService:
         self.repository.shutdown()
 
     def _start_thread(self, target, name):
-        thread = threading.Thread(target=target, name=name, daemon=True)
-        thread.start()
+        thread = self.socketio.start_background_task(target=target)
         self._threads.append(thread)
 
     def _run_market_data_loop(self):
-        print("[INFO] => Started Market Data Loop")
-        # Default symbols if none specified, or fetch from Config
-        symbols = getattr(Config, 'SYMBOLS', ['BTCUSD', 'ETHUSD'])
+        print("[INFO] => Started Market Data Loop", flush=True)
+        symbols = Config.TICKERS
+        self.socketio.sleep(2)  # Wait for server to be ready
         while self.running:
-            data = self.repository.get_market_data(symbols)
-            if data:
-                self.socketio.emit('On_Market_Data_Update', data)
-            time.sleep(1)
+            try:
+                data = self.repository.get_market_data(symbols)
+                for quote in data:
+                    self.socketio.emit('On_Market_Data_Update', quote)
+            except Exception as e:
+                print(f"[ERROR] => Market Data Loop error: {e}", flush=True)
+            self.socketio.sleep(0.5)
 
     def _run_trades_loop(self):
-        print("[INFO] => Started Trades Loop")
+        print("[INFO] => Started Trades Loop", flush=True)
+        self.socketio.sleep(2)  # Wait for server to be ready
         while self.running:
-            data = self.repository.get_active_trades()
-            self.socketio.emit('On_Trades_Data_Update', data)
-            time.sleep(1)
+            try:
+                data = self.repository.get_active_trades()
+                self.socketio.emit('On_Trades_Data_Update', data)
+            except Exception as e:
+                print(f"[ERROR] => Trades Loop error: {e}", flush=True)
+            self.socketio.sleep(3)
 
     def _run_history_loop(self):
-        print("[INFO] => Started History Loop")
+        print("[INFO] => Started History Loop", flush=True)
+        self.socketio.sleep(2)  # Wait for server to be ready
         while self.running:
-            data = self.repository.get_history_deals()
-            self.socketio.emit('On_History_Data_Update', data)
-            time.sleep(5) # History doesn't need to be as frequent
+            try:
+                data = self.repository.get_history_deals()
+                self.socketio.emit('On_History_Data_Update', data)
+            except Exception as e:
+                print(f"[ERROR] => History Loop error: {e}", flush=True)
+            self.socketio.sleep(10)  # History doesn't need to be as frequent
+
