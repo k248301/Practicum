@@ -2,7 +2,7 @@
 
 // API Endpoints
 export const API_CONFIG = {
-    SOCKET_URL: "https://evolving-ghastly-rabbit.ngrok-free.app",
+    SOCKET_URL: "http://127.0.0.1:8080/",
     BOT_API_URL: "https://mouse-funky-tahr.ngrok-free.app",
 };
 

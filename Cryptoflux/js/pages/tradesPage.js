@@ -19,6 +19,7 @@ class TradesPage {
         this.initialized = false;
         this.currentProfitTicket = null;
         this.dummyInterval = null;
+        this.socketConnected = false;
     }
 
     /**
@@ -36,17 +37,19 @@ class TradesPage {
             // Setup event listeners
             this.setupEventListeners();
 
+            // Setup data flow (before connecting so handlers are ready)
+            this.setupDataFlow();
+
             // Connect to socket
             await this.connectSocket();
-
-            // Setup data flow
-            this.setupDataFlow();
 
             // Initialize tabs
             this.initializeTabs();
 
-            // Start with dummy data
-            this.loadDummyData();
+            // Only load dummy data if socket connection failed
+            if (!this.socketConnected) {
+                this.loadDummyData();
+            }
 
             this.initialized = true;
             console.log("Trades page initialized successfully");
@@ -112,7 +115,14 @@ class TradesPage {
             showToast("Connecting to server...", "info");
             await socketService.connect();
             tradeService.initialize();
+            this.socketConnected = true;
             showSuccess("Connected to server");
+
+            // Stop dummy data if it was running
+            if (this.dummyInterval) {
+                clearInterval(this.dummyInterval);
+                this.dummyInterval = null;
+            }
         } catch (error) {
             console.warn("Socket connection failed, using dummy data:", error);
             showError("Could not connect to server. Using demo data.");

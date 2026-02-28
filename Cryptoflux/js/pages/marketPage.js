@@ -93,17 +93,18 @@ class MarketPage {
         try {
             showToast("Connecting to live market data...", "info", 2000);
 
-            // Create custom socket connection for market data
             const socket = io.connect("https://evolving-ghastly-rabbit.ngrok-free.app");
 
             socket.on("connect", () => {
                 console.log("✅ Connected to market data socket");
                 this.usingSocket = true;
                 showSuccess("Connected to live market data");
+                
             });
 
             socket.on("On_Market_Data_Update", (data) => {
-                this.handleMarketUpdate(data);
+                const tickers = Array.isArray(data) ? data : [data];
+                tickers.forEach((ticker) => this.handleMarketUpdate(ticker));
             });
 
             socket.on("disconnect", () => {
@@ -124,7 +125,7 @@ class MarketPage {
                     console.log("Socket timeout, using simulation");
                     this.startSimulation();
                 }
-            }, 3000);
+            }, 5000);
         } catch (error) {
             console.warn("Socket failed, using simulation:", error);
             this.startSimulation();
@@ -140,11 +141,11 @@ class MarketPage {
         showToast("Using simulated market data", "warning", 3000);
 
         const symbols = [
-            { symbol: "BTC/USD", bid: 67125.45, ask: 67130.1, last: 67128.22, spread: 4.65 },
-            { symbol: "ETH/USD", bid: 3521.18, ask: 3522.4, last: 3521.75, spread: 1.22 },
-            { symbol: "XRP/USD", bid: 0.523, ask: 0.526, last: 0.525, spread: 0.003 },
-            { symbol: "LTC/USD", bid: 84.65, ask: 84.92, last: 84.81, spread: 0.27 },
-            { symbol: "BNB/USD", bid: 598.4, ask: 599.05, last: 598.7, spread: 0.65 },
+            { symbol: "BTCUSD!", bid: 67125.45, ask: 67130.1, last: 67128.22, spread: 4.65 },
+            { symbol: "ETHUSD!", bid: 3521.18, ask: 3522.4, last: 3521.75, spread: 1.22 },
+            { symbol: "XRPUSD!", bid: 0.523, ask: 0.526, last: 0.525, spread: 0.003 },
+            { symbol: "LTCUSD!", bid: 84.65, ask: 84.92, last: 84.81, spread: 0.27 },
+            { symbol: "BNBUSD!", bid: 598.4, ask: 599.05, last: 598.7, spread: 0.65 },
         ];
 
         // Initialize
@@ -299,16 +300,16 @@ class MarketPage {
         const cells = [
             data.symbol,
             new Date().toLocaleTimeString(),
-            data.bid.toFixed(2),
-            data.ask.toFixed(2),
-            (data.last || (data.bid + data.ask) / 2).toFixed(2),
+            (data.bid || 0).toFixed(2),
+            (data.ask || 0).toFixed(2),
+            (data.last || ((data.bid || 0) + (data.ask || 0)) / 2).toFixed(2),
             (data.open || 0).toFixed(2),
             (data.close || 0).toFixed(2),
             (data.high || 0).toFixed(2),
             (data.low || 0).toFixed(2),
-            (data.spread || data.ask - data.bid).toFixed(4),
+            (data.spread || ((data.ask || 0) - (data.bid || 0))).toFixed(4),
             data.volume || 0,
-            data.tickVolume || 0,
+            data.tick_volume || 0,
         ];
 
         cells.forEach((text, i) => {

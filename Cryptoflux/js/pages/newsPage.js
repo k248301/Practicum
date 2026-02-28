@@ -34,6 +34,7 @@ class NewsPage {
      */
     async loadNews() {
         try {
+            console.log("Trying to load news")
             const articles = await newsService.fetchNews();
             const filtered = newsService.filterValidArticles(articles);
 

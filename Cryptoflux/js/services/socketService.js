@@ -24,7 +24,12 @@ class SocketService {
                     return;
                 }
 
-                this.socket = io.connect(url);
+                this.socket = io.connect(url, {
+                    extraHeaders: {
+                        "ngrok-skip-browser-warning": "true",
+                    },
+                    withCredentials: true,
+                });
 
                 this.socket.on("connect", () => {
                     console.log("Socket.IO connected");
