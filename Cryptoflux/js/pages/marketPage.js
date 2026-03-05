@@ -99,7 +99,7 @@ class MarketPage {
                 console.log("✅ Connected to market data socket");
                 this.usingSocket = true;
                 showSuccess("Connected to live market data");
-                
+
             });
 
             socket.on("On_Market_Data_Update", (data) => {
@@ -254,12 +254,23 @@ class MarketPage {
         // Get previous prices for comparison
         const prev = this.previousPrices.get(symbol) || { bid: data.bid, ask: data.ask };
 
-        // Update ONLY bid and ask columns (cells 2 and 3)
+        // Update Time
+        row.cells[1].textContent = data.time || new Date().toLocaleTimeString();
+
+        // Update Bid and Ask with color indicators
         const bidCell = row.cells[2];
         this.updatePriceCell(bidCell, data.bid, prev.bid, "bid");
 
         const askCell = row.cells[3];
         this.updatePriceCell(askCell, data.ask, prev.ask, "ask");
+
+        // Update other dynamic columns
+        row.cells[4].textContent = (data.last || (data.bid + data.ask) / 2).toFixed(2);
+        row.cells[7].textContent = (data.high || 0).toFixed(2);
+        row.cells[8].textContent = (data.low || 0).toFixed(2);
+        row.cells[9].textContent = (data.spread || data.ask - data.bid).toFixed(4);
+        row.cells[10].textContent = data.volume || 0;
+        row.cells[11].textContent = data.tickVolume || data.tick_volume || 0;
 
         // Store current as previous
         this.previousPrices.set(symbol, { bid: data.bid, ask: data.ask });
@@ -279,13 +290,25 @@ class MarketPage {
         // Add color and arrow based on direction
         if (newPrice > oldPrice) {
             cell.classList.add("price-up"); // Blue
-            cell.innerHTML = `&#9650; ${newPrice.toFixed(2)}`; // ▲ arrow up
+            cell.dataset.direction = "up";
+            cell.innerHTML = `&#9650; ${newPrice.toFixed(4)}`; // ▲ arrow up
         } else if (newPrice < oldPrice) {
             cell.classList.add("price-down"); // Red
-            cell.innerHTML = `&#9660; ${newPrice.toFixed(2)}`; // ▼ arrow down
+            cell.dataset.direction = "down";
+            cell.innerHTML = `&#9660; ${newPrice.toFixed(4)}`; // ▼ arrow down
         } else {
-            // No change - just update value
-            cell.textContent = newPrice.toFixed(2);
+            // No change - check previous direction to maintain arrow
+            const direction = cell.dataset.direction;
+            if (direction === "up") {
+                cell.classList.add("price-up");
+                cell.innerHTML = `&#9650; ${newPrice.toFixed(4)}`;
+            } else if (direction === "down") {
+                cell.classList.add("price-down");
+                cell.innerHTML = `&#9660; ${newPrice.toFixed(4)}`;
+            } else {
+                // Initial state or neutral
+                cell.textContent = newPrice.toFixed(4);
+            }
         }
     }
 
@@ -300,8 +323,8 @@ class MarketPage {
         const cells = [
             data.symbol,
             new Date().toLocaleTimeString(),
-            (data.bid || 0).toFixed(2),
-            (data.ask || 0).toFixed(2),
+            (data.bid || 0).toFixed(4),
+            (data.ask || 0).toFixed(4),
             (data.last || ((data.bid || 0) + (data.ask || 0)) / 2).toFixed(2),
             (data.open || 0).toFixed(2),
             (data.close || 0).toFixed(2),
