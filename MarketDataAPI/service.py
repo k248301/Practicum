@@ -65,6 +65,7 @@ class MarketDataService:
         while self.running:
             try:
                 data = self.repository.get_history_deals()
+                print(data)
                 self.socketio.emit('On_History_Data_Update', data)
             except Exception as e:
                 print(f"[ERROR] => History Loop error: {e}", flush=True)
