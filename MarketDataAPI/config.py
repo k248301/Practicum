@@ -3,5 +3,5 @@ class Config:
     ACC_ID = 2121951337
     ACC_KEY = "AUx*Q7FC6$"
     ACC_ORG = "XBTFX-MetaTrader5"
-    TICKERS = ['BTCUSD!', 'ETHUSD!', 'XRPUSD!', 'LTCUSD!', 'SOLUSD!', 'BNBUSD!', 'DOTUSD!', 'DOGUSD!', 'TETUSD!']
+    TICKERS = ['BTCUSD!', 'ETHUSD!', 'XRPUSD!', 'LTCUSD!', 'SOLUSD!', 'BNBUSD!', 'DOTUSD!', 'DOGUSD!', 'TETUSD!', 'ADAUSD!', 'AAVUSD']
     PORT = 8080
