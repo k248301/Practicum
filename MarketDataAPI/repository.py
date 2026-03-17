@@ -101,7 +101,7 @@ class MT5Repository(MarketRepository):
 
     def get_history_deals(self):
         """Fetches account deal history for the last 24 hours."""
-        from_date = datetime.now() - timedelta(days=1)
+        from_date = datetime.now() - timedelta(days=30)
         historyDeals = mt5.history_deals_get(from_date, datetime.now())
         arrHistoryDeals = []
         if historyDeals is not None:

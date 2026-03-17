@@ -69,5 +69,5 @@ class MarketDataService:
                 self.socketio.emit('On_History_Data_Update', data)
             except Exception as e:
                 print(f"[ERROR] => History Loop error: {e}", flush=True)
-            self.socketio.sleep(1)  # History doesn't need to be as frequent
+            self.socketio.sleep(5)  # History doesn't need to be as frequent
 
