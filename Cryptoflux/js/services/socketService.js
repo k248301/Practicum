@@ -8,6 +8,8 @@ class SocketService {
         this.socket = null;
         this.connected = false;
         this.eventHandlers = new Map();
+        this._disconnectListeners = [];
+        this._errorListeners = [];
     }
 
     /**
@@ -40,11 +42,15 @@ class SocketService {
                 this.socket.on("disconnect", () => {
                     console.log("Socket.IO disconnected");
                     this.connected = false;
+                    // Notify all registered disconnect listeners
+                    this._disconnectListeners.forEach((cb) => cb());
                 });
 
                 this.socket.on("connect_error", (error) => {
                     console.warn("Socket.IO connection error:", error);
                     this.connected = false;
+                    // Notify all registered error listeners
+                    this._errorListeners.forEach((cb) => cb(error));
                     reject(error);
                 });
             } catch (error) {
@@ -117,12 +123,31 @@ class SocketService {
     }
 
     /**
+     * Register a callback for socket disconnect events.
+     * Useful for pages that need to fall back to simulation on connection loss.
+     * @param {Function} callback
+     */
+    onDisconnect(callback) {
+        this._disconnectListeners.push(callback);
+    }
+
+    /**
+     * Register a callback for socket connection error events.
+     * @param {Function} callback
+     */
+    onError(callback) {
+        this._errorListeners.push(callback);
+    }
+
+    /**
      * Disconnect from socket
      */
     disconnect() {
         if (this.socket) {
             this.socket.disconnect();
             this.connected = false;
+            this._disconnectListeners = [];
+            this._errorListeners = [];
         }
     }
 }

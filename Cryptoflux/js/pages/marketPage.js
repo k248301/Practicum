@@ -87,47 +87,37 @@ class MarketPage {
     }
 
     /**
-     * Connect to socket server with fallback
+     * Connect to the shared socket server.
+     * Uses the socketService singleton so market and trades share ONE connection.
+     * socketService.connect() is a no-op if the socket is already connected.
      */
     async connectSocket() {
         try {
             showToast("Connecting to live market data...", "info", 2000);
 
-            const socket = io.connect("https://evolving-ghastly-rabbit.ngrok-free.app");
+            // Both tradesPage and marketPage call this — socketService deduplicates
+            await socketService.connect();
 
-            socket.on("connect", () => {
-                console.log("✅ Connected to market data socket");
-                this.usingSocket = true;
-                showSuccess("Connected to live market data");
+            this.usingSocket = true;
+            showSuccess("Connected to live market data");
+            console.log("✅ Connected to market data socket");
 
-            });
-
-            socket.on("On_Market_Data_Update", (data) => {
+            // Subscribe to market data via the shared service
+            socketService.on(SOCKET_EVENTS.MARKET_DATA_UPDATE, (data) => {
                 const tickers = Array.isArray(data) ? data : [data];
                 tickers.forEach((ticker) => this.handleMarketUpdate(ticker));
             });
 
-            socket.on("disconnect", () => {
+            // If the shared socket drops, fall back to simulation
+            socketService.onDisconnect(() => {
                 console.warn("Socket disconnected, falling back to simulation");
                 this.usingSocket = false;
                 this.startSimulation();
             });
 
-            socket.on("connect_error", (error) => {
-                console.warn("Socket connection error:", error);
-                this.usingSocket = false;
-                this.startSimulation();
-            });
-
-            // Wait 3 seconds, if no connection, start simulation
-            setTimeout(() => {
-                if (!this.usingSocket) {
-                    console.log("Socket timeout, using simulation");
-                    this.startSimulation();
-                }
-            }, 5000);
         } catch (error) {
-            console.warn("Socket failed, using simulation:", error);
+            console.warn("Socket connection failed, using simulation:", error);
+            this.usingSocket = false;
             this.startSimulation();
         }
     }
@@ -572,6 +562,7 @@ class MarketPage {
         if (this.chartInstance) {
             this.chartInstance.destroy();
         }
+        socketService.disconnect();
     }
 }
 

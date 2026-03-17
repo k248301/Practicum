@@ -78,6 +78,16 @@ class TradesPage {
             botButton.onclick = () => this.handleBotToggle();
         }
 
+        // When the config modal opens, fetch the current config and pre-fill the form
+        modalManager.setOnConfigOpenCallback(async () => {
+            try {
+                const config = await botService.getConfig();
+                modalManager.populateConfigForm(config);
+            } catch (error) {
+                console.warn("Could not load bot config:", error);
+            }
+        });
+
         // Modal config save
         modalManager.setConfigSaveCallback((config) => this.handleBotConfig(config));
 

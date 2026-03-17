@@ -93,28 +93,52 @@
   </div>
 
   <!-- Bot Configuration Modal -->
-  <div id="configModal" class="modal">
-    <div class="modal-box">
-      <h2>Bot Configuration</h2>
+  <div id="configModal" class="modal modern-modal">
+    <div class="modal-box elegant-box">
+      <div class="modal-header-elegant">
+        <h2><i class="ri-settings-4-fill"></i> Bot Configuration</h2>
+        <p class="modal-subtitle">Adjust your algorithmic trading parameters</p>
+      </div>
 
-      <label>Stop Loss</label>
-      <input type="number" id="stopLoss" />
+      <div class="settings-group">
+        <h3 class="group-title">Risk Management</h3>
+        <div class="input-grid">
+          <div class="input-wrapper">
+            <label>Stop Loss (%)</label>
+            <input type="number" id="stopLoss" min="1" max="100" step="0.1" placeholder="0.0" />
+          </div>
+          <div class="input-wrapper">
+            <label>Take Profit (%)</label>
+            <input type="number" id="takeProfit" min="1" max="100" step="0.1" placeholder="0.0" />
+          </div>
+        </div>
+      </div>
 
-      <label>Take Profit</label>
-      <input type="number" id="takeProfit" />
+      <div class="settings-group">
+        <h3 class="group-title">Operation Limits</h3>
+        <div class="input-grid">
+          <div class="input-wrapper">
+            <label>Max Volume</label>
+            <input type="number" id="maxVolume" min="1" max="5" step="0.1" placeholder="0.0" />
+          </div>
+          <div class="input-wrapper">
+            <label>Min Volume</label>
+            <input type="number" id="minVolume" min="0.01" max="1" step="0.01" placeholder="0.0" />
+          </div>
+          <div class="input-wrapper full-width">
+            <label>Max Trades</label>
+            <input type="number" id="maxTrades" min="1" max="20" placeholder="0" />
+          </div>
+        </div>
+      </div>
 
-      <label>Max Volume</label>
-      <input type="number" id="maxVolume" />
+      <div id="riskWarning" class="risk-warning hidden">
+        <i class="ri-alert-fill"></i> Warning: Updating Stop Loss and Take Profit is risky!
+      </div>
 
-      <label>Min Volume</label>
-      <input type="number" id="minVolume" />
-
-      <label>Max Trades</label>
-      <input type="number" id="maxTrades" />
-
-      <div class="modal-btns">
-        <button class="btn-cancel btn2">Cancel</button>
-        <button class="btn-done btn2">Done</button>
+      <div class="modal-btns elegant-btns">
+        <button class="btn-cancel elegant-btn-outline">Cancel</button>
+        <button class="btn-done elegant-btn-primary">Save Changes</button>
       </div>
     </div>
   </div>

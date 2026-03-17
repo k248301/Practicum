@@ -207,7 +207,7 @@ BOT_LOCK = threading.Lock()
 
 def main():
     initialize_mt5()
-    model = load_model('crypto_price_predictor_model_2024-05-16_23-03-21.h5')
+    model = load_model('crypto_predictor_2026_02_27_04_17_47.h5')
     symbols = ['BTCUSD', 'ETHUSD', 'SOLUSD']
 
     while RUNNING:
@@ -278,7 +278,7 @@ def bot_config():
         BOT_CONFIG["max_volume"] = float(data["max_volume"])
         BOT_CONFIG["min_volume"] = float(data["min_volume"])
         BOT_CONFIG["max_trades"] = int(data["max_trades"])
-
+        print(BOT_CONFIG)
         return jsonify({"Message": "Config updated.", "Config": BOT_CONFIG})
     else:
         return jsonify({"Config": BOT_CONFIG})
