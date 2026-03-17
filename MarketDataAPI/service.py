@@ -57,7 +57,7 @@ class MarketDataService:
                 self.socketio.emit('On_Trades_Data_Update', data)
             except Exception as e:
                 print(f"[ERROR] => Trades Loop error: {e}", flush=True)
-            self.socketio.sleep(3)
+            self.socketio.sleep(0.5)
 
     def _run_history_loop(self):
         print("[INFO] => Started History Loop", flush=True)
@@ -69,5 +69,5 @@ class MarketDataService:
                 self.socketio.emit('On_History_Data_Update', data)
             except Exception as e:
                 print(f"[ERROR] => History Loop error: {e}", flush=True)
-            self.socketio.sleep(10)  # History doesn't need to be as frequent
+            self.socketio.sleep(1)  # History doesn't need to be as frequent
 

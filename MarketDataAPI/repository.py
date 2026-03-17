@@ -81,7 +81,7 @@ class MT5Repository(MarketRepository):
 
                 tickerQuote = {
                     'symbol': ticker,
-                    'time': self.getTimeSinceEpoch(symbol_tick["time"]).strftime('%Y-%m-%d %H:%M:%S'),
+                    'time': self.getTimeSinceEpoch(symbol_tick["time"]).strftime('%H:%M:%S'),
                     'bid': float(symbol_tick["bid"]),
                     'ask': float(symbol_tick["ask"]),
                     'last': float(symbol_tick["last"]),
