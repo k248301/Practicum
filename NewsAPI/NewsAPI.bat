@@ -1,5 +1,5 @@
 @echo off
-echo Running MarketDataAPI...
+echo Running NewsAPI...
 
 python NewsAPI.py
 
