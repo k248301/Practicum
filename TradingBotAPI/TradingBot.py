@@ -4,7 +4,8 @@ import threading
 import numpy as np
 import pandas as pd
 import MetaTrader5 as mt5
-from datetime import datetime, time, timedelta
+import time
+from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from tensorflow.keras.models import load_model
@@ -232,14 +233,19 @@ def analyze_and_trade(symbol, stop_loss_percent, take_profit_percent, model, sca
         sl, tp = calculate_sl_tp(tick.ask, mt5.ORDER_TYPE_BUY, stop_loss_percent, take_profit_percent)
         volume = calculate_volume(tick.ask)
         if volume is not None:
-            send_buy_order(symbol, volume, tick.ask, sl, tp)
+            res = send_buy_order(symbol, volume, tick.ask, sl, tp)
+            if res.retcode == mt5.TRADE_RETCODE_DONE:
+                return True
     elif signal == 2:
         logger.info(f"Model signaled SELL. Considering sell order...")
         sl, tp = calculate_sl_tp(tick.bid, mt5.ORDER_TYPE_SELL, stop_loss_percent, take_profit_percent)
         volume = calculate_volume(tick.bid)
         if volume is not None:
-            send_sell_order(symbol, volume, tick.bid, sl, tp)
+            res = send_sell_order(symbol, volume, tick.bid, sl, tp)
+            if res.retcode == mt5.TRADE_RETCODE_DONE:
+                return True
     
+    return False
 RUNNING = False
 BOTTHREAD = None
 BOT_LOCK = threading.Lock()
@@ -263,7 +269,10 @@ def main():
         for symbol in symbols:
             if not RUNNING:
                 break
-            analyze_and_trade(symbol, stop_loss_percent, take_profit_percent, model, scaler)
+            if analyze_and_trade(symbol, stop_loss_percent, take_profit_percent, model, scaler):
+                logger.info("Trade placed successfully. Waiting for 4 minutes...")
+                time.sleep(300)
+            time.sleep(1) # Small delay to prevent tight loop if no trade
 
 app = Flask(__name__)
 CORS(app)
