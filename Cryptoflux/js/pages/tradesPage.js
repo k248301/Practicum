@@ -46,6 +46,9 @@ class TradesPage {
             // Initialize tabs
             this.initializeTabs();
 
+            // Check current bot status and update UI
+            await this.updateBotStatusUI();
+
             // Only load dummy data if socket connection failed
             if (!this.socketConnected) {
                 this.loadDummyData();
@@ -179,34 +182,85 @@ class TradesPage {
     }
 
     /**
-     * Handle bot toggle (start/stop)
+     * Handle bot toggle (start/stop) with staggered startup and toasts
      */
     async handleBotToggle() {
         const botButton = document.getElementById(DOM_IDS.BOT_BUTTON);
+        const configButton = document.getElementById(DOM_IDS.CONFIG_BUTTON);
+
         if (!botButton) return;
 
         const isRunning = botButton.dataset.botState === "running";
 
         try {
             botButton.disabled = true;
-            const response = isRunning
-                ? await botService.stopBot()
-                : await botService.startBot();
 
-            showSuccess(response.Message || "Bot status updated");
+            if (!isRunning) {
+                // --- BOT STARTUP FLOW (5 SECONDS) ---
+                if (configButton) configButton.disabled = true;
 
-            // Update button state
-            if (response.Status === 1) {
+                // Stage 1: Preparation
+                showToast("Preparing to start Bot...", "info", 1700);
+                await new Promise(r => setTimeout(r, 2000));
+
+                // Stage 2: Agent Initialization
+                showToast("Starting Bot Agent...", "info", 1700);
+                await new Promise(r => setTimeout(r, 2000));
+
+                const response = await botService.startBot();
+
+                // Stage 3: Confirmation
+                showSuccess("Bot Started");
+                await new Promise(r => setTimeout(r, 500));
+
+                if (response.Status === 1) {
+                    botButton.textContent = "Stop Bot";
+                    botButton.dataset.botState = "running";
+                    botButton.classList.add("running"); // Toggle integrated indicator
+                    if (configButton) configButton.disabled = true;
+                }
+            } else {
+                // --- BOT STOP FLOW ---
+                const response = await botService.stopBot();
+                botButton.textContent = "Start Bot";
+                botButton.dataset.botState = "stopped";
+                botButton.classList.remove("running"); // Deactivate indicator
+                if (configButton) configButton.disabled = false;
+                showSuccess(response.Message || "Bot stopped");
+            }
+        } catch (error) {
+            console.error("Bot toggle error:", error);
+            showError(error.message || "Failed to update bot status");
+            // If failed to start, re-enable config button
+            if (!isRunning && configButton) configButton.disabled = false;
+        } finally {
+            botButton.disabled = false;
+        }
+    }
+
+    /**
+     * Update UI based on actual bot status from API
+     */
+    async updateBotStatusUI() {
+        try {
+            const botButton = document.getElementById(DOM_IDS.BOT_BUTTON);
+            const configButton = document.getElementById(DOM_IDS.CONFIG_BUTTON);
+            if (!botButton) return;
+
+            const status = await botService.getBotStatus();
+            if (status.RUNNING) {
                 botButton.textContent = "Stop Bot";
                 botButton.dataset.botState = "running";
+                botButton.classList.add("running");
+                if (configButton) configButton.disabled = true;
             } else {
                 botButton.textContent = "Start Bot";
                 botButton.dataset.botState = "stopped";
+                botButton.classList.remove("running");
+                if (configButton) configButton.disabled = false;
             }
         } catch (error) {
-            showError(error.message || "Failed to update bot status");
-        } finally {
-            botButton.disabled = false;
+            console.warn("Could not fetch bot status on init:", error);
         }
     }
 

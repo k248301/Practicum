@@ -1,5 +1,5 @@
 import { newsService } from "../services/newsService.js";
-import { showError, showSuccess } from "../ui/toast.js";
+import { showError, showSuccess, showWarning, showToast } from "../ui/toast.js";
 
 /**
  * News Page Controller
@@ -30,17 +30,24 @@ class NewsPage {
     }
 
     /**
-     * Load and display news articles
+     * Load and display news articles with retry logic
      */
-    async loadNews() {
+    async loadNews(retryCount = 0) {
+        const MAX_RETRIES = 3;
+        const RETRY_DELAY = 2000;
+
         try {
-            console.log("Trying to load news")
+            // Show skeleton loader on first attempt
+            if (retryCount === 0) {
+                this.showSkeletonLoader();
+            }
+
+            console.log(`Loading news (Attempt ${retryCount + 1})...`);
             const articles = await newsService.fetchNews();
             const filtered = newsService.filterValidArticles(articles);
 
             if (filtered.length === 0) {
-                showError("No news articles available");
-                return;
+                throw new Error("No valid news articles available");
             }
 
             // Display top news (main + side articles)
@@ -49,11 +56,80 @@ class NewsPage {
             // Display slider articles
             this.displaySlider(filtered.slice(4));
 
-            showSuccess("News loaded successfully");
+            if (retryCount > 0) {
+                showSuccess("News loaded successfully after retry");
+            }
         } catch (error) {
-            showError(error.message || "Failed to load news");
-            console.error("News loading error:", error);
+            console.error(`News loading error (Attempt ${retryCount + 1}):`, error);
+
+            if (retryCount < MAX_RETRIES) {
+                const remaining = MAX_RETRIES - retryCount;
+                showToast(`News load failed. Retrying in 3s... (${remaining} left)`, "warning", 2500);
+                
+                // Wait for retry delay
+                await new Promise(r => setTimeout(r, RETRY_DELAY));
+                return this.loadNews(retryCount + 1);
+            }
+
+            showError(error.message || "Failed to load news after multiple attempts");
+            this.clearContainers(); // Clear skeleton if final attempt fails
         }
+    }
+
+    /**
+     * Show skeleton loader placeholders
+     */
+    showSkeletonLoader() {
+        const mainArticleEl = document.getElementById("mainArticle");
+        const sideArticlesEl = document.getElementById("sideArticles");
+        const slider = document.getElementById("slider");
+
+        if (mainArticleEl) {
+            mainArticleEl.innerHTML = `
+                <div class="main-article">
+                    <div class="skeleton skeleton-main"></div>
+                    <div class="overlay">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-text"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        if (sideArticlesEl) {
+            sideArticlesEl.innerHTML = Array(3).fill(0).map(() => `
+                <div class="side-article">
+                    <div class="skeleton" style="width: 100px; height: 80px;"></div>
+                    <div class="content" style="flex: 1;">
+                        <div class="skeleton skeleton-title" style="width: 80%;"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%; margin-top: 10px;"></div>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        if (slider) {
+            slider.innerHTML = Array(6).fill(0).map(() => `
+                <div class="slide">
+                    <div class="skeleton" style="height: 150px;"></div>
+                    <div class="slide-content">
+                        <div class="skeleton skeleton-title" style="width: 70%;"></div>
+                        <div class="skeleton skeleton-text" style="width: 90%; margin-top: 10px;"></div>
+                    </div>
+                </div>
+            `).join("");
+        }
+    }
+
+    /**
+     * Clear news containers (e.g., if loading fails completely)
+     */
+    clearContainers() {
+        const els = ["mainArticle", "sideArticles", "slider"];
+        els.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = "";
+        });
     }
 
     /**

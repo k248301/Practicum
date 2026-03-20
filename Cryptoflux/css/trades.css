@@ -98,6 +98,38 @@ nav {
   transform: translateY(-2px);
 }
 
+.btn1:disabled, .btn2:disabled {
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+#botButton.running {
+  background: linear-gradient(90deg, #2289ff, #6ad0ff);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4) !important;
+  color: #fff !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#botButton.running::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  animation: pulse-dot 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.6; }
+}
+
 .bot-actions {
   display: flex;
   justify-content: flex-end;
