@@ -39,7 +39,7 @@ if (signupForm) {
     const email = document.querySelector(".up-email").value;
     const password = document.querySelector(".up-password").value;
     const confirmPassword = document.querySelector(
-      ".up-confirm-password"
+      ".up-confirm-password",
     ).value;
 
     // 🔹 Check if passwords match
@@ -129,11 +129,11 @@ function checkAuth() {
     // ----------------------------------------------
     // User logged in → block login page
     // ----------------------------------------------
-    if (user && onLoginPage) {
+    /*if (user && onLoginPage) {
       console.log("Logged in — redirect → home.html");
       window.location.href = "home.html";
       return;
-    }
+    }*/
 
     console.log("User authenticated — staying on this page.");
   });
