@@ -339,5 +339,13 @@ def bot_config():
     else:
         return jsonify({"Config": BOT_CONFIG})
 
+@app.route('/bot-status', methods=['GET'])
+def bot_status():
+    global RUNNING
+    return jsonify({
+        "RUNNING": RUNNING,
+        "Status": 1 if RUNNING else 0
+    })
+
 if __name__ == '__main__':
     app.run(port=8082)

@@ -28,4 +28,4 @@ echo Launching TradingBot Tunnel...
 start "TradingBot Tunnel" /d "TradingBotAPI\Tunnel-8082" cmd /c start_tunneling.bat
 
 echo All services are starting in separate windows.
-pause
+exit /b
