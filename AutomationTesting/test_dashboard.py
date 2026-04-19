@@ -6,7 +6,7 @@ import time
 class TestDashboard(BaseTest):
 
     @pytest.fixture(autouse=True)
-    def login_setup(self):
+    def login_setup(self, setup_driver):
         self.login("testuser@example.com", "TestPass123!")
 
     def test_ui_general_checks(self):
