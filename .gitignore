@@ -1,0 +1,13 @@
+*.pyc
+*.log
+
+# Python Virtual Environment
+.venv/
+venv/
+
+# Pytest and Playwright Caches/Reports
+.pytest_cache/
+__pycache__/
+playwright-report/
+test-results/
+*.png

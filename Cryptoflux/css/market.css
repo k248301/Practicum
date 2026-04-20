@@ -22,11 +22,13 @@ body {
 .page-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* full viewport height */
+  min-height: 100vh;
+  /* full viewport height */
 }
 
 .content-wrap {
-  flex: 1; /* take all available space between nav and footer */
+  flex: 1;
+  /* take all available space between nav and footer */
 }
 
 /** Navigation **/
@@ -83,14 +85,19 @@ nav {
 }
 
 .btn1 {
-  background-color: #0076ea; /* Matches nav links */
+  background-color: #0076ea;
+  /* Matches nav links */
   color: white;
-  border: none; /* Subtle outline to differentiate */
+  border: none;
+  /* Subtle outline to differentiate */
   border-radius: 25px;
-  padding: 10px 18px; /* Same padding as nav links */
-  font-weight: 500; /* Same as links */
+  padding: 10px 18px;
+  /* Same padding as nav links */
+  font-weight: 500;
+  /* Same as links */
   letter-spacing: 0.3px;
-  font-size: 1rem; /* Ensures same text size */
+  font-size: 1rem;
+  /* Ensures same text size */
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -188,6 +195,9 @@ th,
 td {
   padding: 10px 15px;
   text-align: left;
+  font-variant-numeric: tabular-nums;
+  /* Prevents jumping widths from changing digits */
+  min-width: 90px;
 }
 
 /* Only horizontal borders */
@@ -213,6 +223,12 @@ td {
   font-size: medium;
   font-family: "Times New Roman", Times, serif;
   transition: color 0.3s ease;
+}
+
+td.bid,
+td.ask {
+  min-width: 110px;
+  /* Give bid/ask slightly more room to prevent jumping */
 }
 
 /* Row background */
@@ -301,38 +317,49 @@ tbody tr:hover {
 /* RESPONSIVE - compact footer */
 @media (max-width: 900px) {
   .footer-container {
-    flex-direction: column; /* stack sections vertically */
+    flex-direction: column;
+    /* stack sections vertically */
     align-items: center;
     text-align: center;
-    gap: 10px; /* smaller gap between sections */
+    gap: 10px;
+    /* smaller gap between sections */
   }
 
   .footer-left,
   .footer-center,
   .footer-right {
-    flex: unset; /* remove flex-basis */
-    width: auto; /* allow content to shrink naturally */
-    margin: 0; /* remove any default margin */
+    flex: unset;
+    /* remove flex-basis */
+    width: auto;
+    /* allow content to shrink naturally */
+    margin: 0;
+    /* remove any default margin */
   }
 
   .footer-item {
-    margin: 3px 0; /* very small vertical margin */
-    font-size: 13px; /* smaller text */
-    gap: 5px; /* smaller icon-text gap */
+    margin: 3px 0;
+    /* very small vertical margin */
+    font-size: 13px;
+    /* smaller text */
+    gap: 5px;
+    /* smaller icon-text gap */
   }
 
   .footer-logo {
-    height: 35px; /* smaller logo */
+    height: 35px;
+    /* smaller logo */
     margin-bottom: 3px;
   }
 
   .footer-icons {
-    gap: 10px; /* tighter spacing between icons */
+    gap: 10px;
+    /* tighter spacing between icons */
     margin-top: 5px;
   }
 
   .footer {
-    padding: 10px 15px; /* minimal padding for compactness */
+    padding: 10px 15px;
+    /* minimal padding for compactness */
   }
 }
 
@@ -391,7 +418,8 @@ tbody tr:hover {
   background: white;
   width: 60%;
   max-width: 900px;
-  height: 500px; /* 🔥 FIXED HEIGHT */
+  height: 500px;
+  /* 🔥 FIXED HEIGHT */
   margin: 5% auto;
   border-radius: 15px;
   padding: 20px;
@@ -419,12 +447,14 @@ tbody tr:hover {
 
 #graphContainer {
   flex: 1;
-  overflow: hidden; /* prevents double scroll */
+  overflow: hidden;
+  /* prevents double scroll */
 }
 
 #graphCanvas {
   width: 100% !important;
-  height: 100% !important; /* 🔥 CHART ALWAYS FITS AREA */
+  height: 100% !important;
+  /* 🔥 CHART ALWAYS FITS AREA */
 }
 
 /* ===== MODAL FIXED HEIGHT + SCROLLABLE CONTENT ===== */
@@ -439,8 +469,10 @@ tbody tr:hover {
 .modal-content {
   background: white;
   width: 65%;
-  max-height: 80vh; /* FIXED HEIGHT */
-  overflow-y: auto; /* SCROLLABLE */
+  max-height: 80vh;
+  /* FIXED HEIGHT */
+  overflow-y: auto;
+  /* SCROLLABLE */
   margin: 5% auto;
   border-radius: 10px;
   padding: 20px;
@@ -472,6 +504,7 @@ tbody tr:hover {
 .time-buttons {
   margin: 10px 0 20px;
 }
+
 .time-buttons button {
   padding: 6px 12px;
   border: none;
@@ -481,6 +514,7 @@ tbody tr:hover {
   border-radius: 6px;
   cursor: pointer;
 }
+
 .time-buttons button.active {
   background: #007bff;
 }
@@ -489,6 +523,7 @@ tbody tr:hover {
 .tabcontent {
   display: none;
 }
+
 .tablinks.active {
   background-color: #007bff;
   color: white;

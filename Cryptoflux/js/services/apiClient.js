@@ -1,21 +1,17 @@
-import { NGROK_HEADERS, API_CONFIG } from "../core/constants.js";
+import { NGROK_HEADERS } from "../core/constants.js";
 
 /**
  * Generic API client for HTTP requests
  */
 class ApiClient {
-    constructor() {
-        this.baseURL = API_CONFIG.BOT_API_URL;
-    }
-
     /**
      * Make a GET request
-     * @param {string} endpoint - API endpoint
+     * @param {string} url - Full API URL
      * @param {Object} headers - Additional headers
      * @returns {Promise<any>}
      */
-    async get(endpoint, headers = {}) {
-        return this.request(endpoint, {
+    async get(url, headers = {}) {
+        return this.request(url, {
             method: "GET",
             headers: { ...NGROK_HEADERS, ...headers },
         });
@@ -23,13 +19,13 @@ class ApiClient {
 
     /**
      * Make a POST request
-     * @param {string} endpoint - API endpoint
+     * @param {string} url - Full API URL
      * @param {Object} data - Request body
      * @param {Object} headers - Additional headers
      * @returns {Promise<any>}
      */
-    async post(endpoint, data = null, headers = {}) {
-        return this.request(endpoint, {
+    async post(url, data = null, headers = {}) {
+        return this.request(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -42,15 +38,11 @@ class ApiClient {
 
     /**
      * Make a generic HTTP request
-     * @param {string} endpoint - API endpoint
+     * @param {string} url - Full URL to fetch
      * @param {Object} options - Fetch options
      * @returns {Promise<any>}
      */
-    async request(endpoint, options) {
-        const url = endpoint.startsWith("http")
-            ? endpoint
-            : `${this.baseURL}${endpoint}`;
-
+    async request(url, options) {
         try {
             const response = await fetch(url, options);
 
@@ -65,7 +57,7 @@ class ApiClient {
             }
             return await response.text();
         } catch (error) {
-            console.error(`API request failed: ${endpoint}`, error);
+            console.error(`API request failed: ${url}`, error);
             throw error;
         }
     }

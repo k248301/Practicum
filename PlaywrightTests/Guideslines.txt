@@ -1,0 +1,7 @@
+# Run tests visibly (pops up the browser)
+pytest PlaywrightTests/ --headed
+
+# Run tests headlessly and generate an HTML report
+pytest PlaywrightTests/ --html=report.html
+
+pytest --headed

@@ -25,7 +25,7 @@ export function formatPercent(value, decimals = 2) {
  * @returns {string}
  */
 export function formatPrice(value, decimals = 2) {
-    return value.toFixed(decimals);
+    return value.toFixed(4);
 }
 
 /**

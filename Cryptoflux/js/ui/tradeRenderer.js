@@ -71,6 +71,8 @@ class TradeRenderer {
             td.textContent = field.value;
             if (field.key === "profit") {
                 td.classList.add("profit-cell");
+            } else if (field.key === "type") {
+                td.style.background = data.type === 0 ? "orange" : "seagreen";
             }
             row.appendChild(td);
         });
@@ -101,6 +103,7 @@ class TradeRenderer {
         // Update fields
         cells[2].textContent = data.time; // time
         cells[3].textContent = TRADE_TYPE_NAMES[data.type] || "Unknown"; // type
+        cells[3].style.background = data.type === 0 ? "orange" : "seagreen";
         cells[4].textContent = data.volume; // volume
         cells[5].textContent = data.tradePrice; // tradePrice
         cells[6].textContent = data.stopLoss; // stopLoss
@@ -109,20 +112,16 @@ class TradeRenderer {
 
         // Update profit with arrows and colors
         const profitCell = cells[9];
-        const prevProfit = this.previousProfits.get(data.ticket) || data.profit;
-
-        if (data.profit > prevProfit) {
+        if (data.profit > 0) {
             profitCell.style.color = CHART_COLORS.POSITIVE;
-            profitCell.innerHTML = `&#9650; ${formatProfit(data.profit)}`;
-        } else if (data.profit < prevProfit) {
+            profitCell.innerHTML = `&#9650; ${formatProfit(data.profit, 4)}`;
+        } else if (data.profit < 0) {
             profitCell.style.color = CHART_COLORS.NEGATIVE;
-            profitCell.innerHTML = `&#9660; ${formatProfit(data.profit)}`;
+            profitCell.innerHTML = `&#9660; ${formatProfit(data.profit, 4)}`;
         } else {
             profitCell.style.color = "black";
-            profitCell.innerHTML = formatProfit(data.profit);
+            profitCell.innerHTML = formatProfit(data.profit, 4);
         }
-
-        this.previousProfits.set(data.ticket, data.profit);
 
         // Update change
         cells[10].textContent = data.change.toFixed(2);

@@ -1,4 +1,5 @@
 import { apiClient } from "./apiClient.js";
+import { API_CONFIG } from "../core/constants.js";
 
 /**
  * News Service - Fetches cryptocurrency news
@@ -10,7 +11,7 @@ class NewsService {
      */
     async fetchNews() {
         try {
-            const response = await apiClient.get("/fetch-news");
+            const response = await apiClient.get(`${API_CONFIG.NEWS_API_URL}/fetch-news`);
             return response.articles || [];
         } catch (error) {
             console.error("Failed to fetch news:", error);

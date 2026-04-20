@@ -1,7 +1,8 @@
 import { apiClient } from "./apiClient.js";
+import { API_CONFIG } from "../core/constants.js";
 
 /**
- * Bot Service - Manages trading bot API calls
+ * Bot Service - Manages trading bot API calls.
  */
 class BotService {
     /**
@@ -10,7 +11,7 @@ class BotService {
      */
     async startBot() {
         try {
-            const response = await apiClient.get("/start-bot");
+            const response = await apiClient.get(`${API_CONFIG.BOT_API_URL}/start-bot`);
             return response;
         } catch (error) {
             console.error("Failed to start bot:", error);
@@ -24,7 +25,7 @@ class BotService {
      */
     async stopBot() {
         try {
-            const response = await apiClient.get("/stop-bot");
+            const response = await apiClient.get(`${API_CONFIG.BOT_API_URL}/stop-bot`);
             return response;
         } catch (error) {
             console.error("Failed to stop bot:", error);
@@ -33,18 +34,43 @@ class BotService {
     }
 
     /**
-     * Configure the trading bot
-     * @param {Object} config - Bot configuration
-     * @param {number} config.stopLoss - Stop loss value
-     * @param {number} config.take Profit - Take profit value
-     * @param {number} config.maxVolume - Maximum volume
-     * @param {number} config.minVolume - Minimum volume
-     * @param {number} config.maxTrades - Maximum trades
+     * Get the current bot configuration from the API
+     * @returns {Promise<Object>} Config object with snake_case keys
+     */
+    async getConfig() {
+        try {
+            const response = await apiClient.get(`${API_CONFIG.BOT_API_URL}/bot-config`);
+            return response.Config; // { stop_loss, take_profit, max_volume, min_volume, max_trades }
+        } catch (error) {
+            console.error("Failed to get bot config:", error);
+            throw new Error("Unable to fetch bot configuration.");
+        }
+    }
+
+    /**
+     * Save bot configuration to the API
+     * @param {Object} config - Config with camelCase keys from the UI
+     * @param {number} config.stopLoss
+     * @param {number} config.takeProfit
+     * @param {number} config.maxVolume
+     * @param {number} config.minVolume
+     * @param {number} config.maxTrades
      * @returns {Promise<Object>}
      */
     async configureBot(config) {
         try {
-            const response = await apiClient.post("/configure-bot", config);
+            // Map camelCase UI fields → snake_case API fields
+            const payload = {
+                stop_loss: config.stopLoss,
+                take_profit: config.takeProfit,
+                max_volume: config.maxVolume,
+                min_volume: config.minVolume,
+                max_trades: config.maxTrades,
+            };
+            const response = await apiClient.post(
+                `${API_CONFIG.BOT_API_URL}/bot-config`,
+                payload
+            );
             return response;
         } catch (error) {
             console.error("Failed to configure bot:", error);
@@ -58,7 +84,7 @@ class BotService {
      */
     async getBotStatus() {
         try {
-            const response = await apiClient.get("/bot-status");
+            const response = await apiClient.get(`${API_CONFIG.BOT_API_URL}/bot-status`);
             return response;
         } catch (error) {
             console.error("Failed to get bot status:", error);

@@ -87,46 +87,37 @@ class MarketPage {
     }
 
     /**
-     * Connect to socket server with fallback
+     * Connect to the shared socket server.
+     * Uses the socketService singleton so market and trades share ONE connection.
+     * socketService.connect() is a no-op if the socket is already connected.
      */
     async connectSocket() {
         try {
             showToast("Connecting to live market data...", "info", 2000);
 
-            // Create custom socket connection for market data
-            const socket = io.connect("https://evolving-ghastly-rabbit.ngrok-free.app");
+            // Both tradesPage and marketPage call this — socketService deduplicates
+            await socketService.connect();
 
-            socket.on("connect", () => {
-                console.log("✅ Connected to market data socket");
-                this.usingSocket = true;
-                showSuccess("Connected to live market data");
+            this.usingSocket = true;
+            showSuccess("Connected to live market data");
+            console.log("✅ Connected to market data socket");
+
+            // Subscribe to market data via the shared service
+            socketService.on(SOCKET_EVENTS.MARKET_DATA_UPDATE, (data) => {
+                const tickers = Array.isArray(data) ? data : [data];
+                tickers.forEach((ticker) => this.handleMarketUpdate(ticker));
             });
 
-            socket.on("On_Market_Data_Update", (data) => {
-                this.handleMarketUpdate(data);
-            });
-
-            socket.on("disconnect", () => {
+            // If the shared socket drops, fall back to simulation
+            socketService.onDisconnect(() => {
                 console.warn("Socket disconnected, falling back to simulation");
                 this.usingSocket = false;
                 this.startSimulation();
             });
 
-            socket.on("connect_error", (error) => {
-                console.warn("Socket connection error:", error);
-                this.usingSocket = false;
-                this.startSimulation();
-            });
-
-            // Wait 3 seconds, if no connection, start simulation
-            setTimeout(() => {
-                if (!this.usingSocket) {
-                    console.log("Socket timeout, using simulation");
-                    this.startSimulation();
-                }
-            }, 3000);
         } catch (error) {
-            console.warn("Socket failed, using simulation:", error);
+            console.warn("Socket connection failed, using simulation:", error);
+            this.usingSocket = false;
             this.startSimulation();
         }
     }
@@ -140,11 +131,11 @@ class MarketPage {
         showToast("Using simulated market data", "warning", 3000);
 
         const symbols = [
-            { symbol: "BTC/USD", bid: 67125.45, ask: 67130.1, last: 67128.22, spread: 4.65 },
-            { symbol: "ETH/USD", bid: 3521.18, ask: 3522.4, last: 3521.75, spread: 1.22 },
-            { symbol: "XRP/USD", bid: 0.523, ask: 0.526, last: 0.525, spread: 0.003 },
-            { symbol: "LTC/USD", bid: 84.65, ask: 84.92, last: 84.81, spread: 0.27 },
-            { symbol: "BNB/USD", bid: 598.4, ask: 599.05, last: 598.7, spread: 0.65 },
+            { symbol: "BTCUSD!", bid: 67125.45, ask: 67130.1, last: 67128.22, spread: 4.65 },
+            { symbol: "ETHUSD!", bid: 3521.18, ask: 3522.4, last: 3521.75, spread: 1.22 },
+            { symbol: "XRPUSD!", bid: 0.523, ask: 0.526, last: 0.525, spread: 0.003 },
+            { symbol: "LTCUSD!", bid: 84.65, ask: 84.92, last: 84.81, spread: 0.27 },
+            { symbol: "BNBUSD!", bid: 598.4, ask: 599.05, last: 598.7, spread: 0.65 },
         ];
 
         // Initialize
@@ -253,12 +244,23 @@ class MarketPage {
         // Get previous prices for comparison
         const prev = this.previousPrices.get(symbol) || { bid: data.bid, ask: data.ask };
 
-        // Update ONLY bid and ask columns (cells 2 and 3)
+        // Update Time
+        row.cells[1].textContent = data.time || new Date().toLocaleTimeString();
+
+        // Update Bid and Ask with color indicators
         const bidCell = row.cells[2];
         this.updatePriceCell(bidCell, data.bid, prev.bid, "bid");
 
         const askCell = row.cells[3];
         this.updatePriceCell(askCell, data.ask, prev.ask, "ask");
+
+        // Update other dynamic columns
+        row.cells[4].textContent = (data.last || (data.bid + data.ask) / 2).toFixed(2);
+        row.cells[7].textContent = (data.high || 0).toFixed(2);
+        row.cells[8].textContent = (data.low || 0).toFixed(2);
+        row.cells[9].textContent = (data.spread || data.ask - data.bid).toFixed(4);
+        row.cells[10].textContent = data.volume || 0;
+        row.cells[11].textContent = data.tickVolume || data.tick_volume || 0;
 
         // Store current as previous
         this.previousPrices.set(symbol, { bid: data.bid, ask: data.ask });
@@ -278,13 +280,25 @@ class MarketPage {
         // Add color and arrow based on direction
         if (newPrice > oldPrice) {
             cell.classList.add("price-up"); // Blue
-            cell.innerHTML = `&#9650; ${newPrice.toFixed(2)}`; // ▲ arrow up
+            cell.dataset.direction = "up";
+            cell.innerHTML = `&#9650; ${newPrice.toFixed(4)}`; // ▲ arrow up
         } else if (newPrice < oldPrice) {
             cell.classList.add("price-down"); // Red
-            cell.innerHTML = `&#9660; ${newPrice.toFixed(2)}`; // ▼ arrow down
+            cell.dataset.direction = "down";
+            cell.innerHTML = `&#9660; ${newPrice.toFixed(4)}`; // ▼ arrow down
         } else {
-            // No change - just update value
-            cell.textContent = newPrice.toFixed(2);
+            // No change - check previous direction to maintain arrow
+            const direction = cell.dataset.direction;
+            if (direction === "up") {
+                cell.classList.add("price-up");
+                cell.innerHTML = `&#9650; ${newPrice.toFixed(4)}`;
+            } else if (direction === "down") {
+                cell.classList.add("price-down");
+                cell.innerHTML = `&#9660; ${newPrice.toFixed(4)}`;
+            } else {
+                // Initial state or neutral
+                cell.textContent = newPrice.toFixed(4);
+            }
         }
     }
 
@@ -299,16 +313,16 @@ class MarketPage {
         const cells = [
             data.symbol,
             new Date().toLocaleTimeString(),
-            data.bid.toFixed(2),
-            data.ask.toFixed(2),
-            (data.last || (data.bid + data.ask) / 2).toFixed(2),
+            (data.bid || 0).toFixed(4),
+            (data.ask || 0).toFixed(4),
+            (data.last || ((data.bid || 0) + (data.ask || 0)) / 2).toFixed(2),
             (data.open || 0).toFixed(2),
             (data.close || 0).toFixed(2),
             (data.high || 0).toFixed(2),
             (data.low || 0).toFixed(2),
-            (data.spread || data.ask - data.bid).toFixed(4),
+            (data.spread || ((data.ask || 0) - (data.bid || 0))).toFixed(4),
             data.volume || 0,
-            data.tickVolume || 0,
+            data.tick_volume || 0,
         ];
 
         cells.forEach((text, i) => {
@@ -548,6 +562,7 @@ class MarketPage {
         if (this.chartInstance) {
             this.chartInstance.destroy();
         }
+        socketService.disconnect();
     }
 }
 

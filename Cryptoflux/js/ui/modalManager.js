@@ -1,4 +1,5 @@
 import { DOM_IDS } from "../core/constants.js";
+import { showError } from "./toast.js";
 
 /**
  * Modal Manager - Centralized modal handling
@@ -7,6 +8,7 @@ class ModalManager {
     constructor() {
         this.modals = {};
         this.onConfigSave = null;
+        this.onConfigOpen = null;
     }
 
     /**
@@ -48,10 +50,38 @@ class ModalManager {
 
         if (doneBtn) {
             doneBtn.onclick = () => {
-                this.saveConfig();
-                this.closeConfigModal();
+                const success = this.saveConfig();
+                if (success) {
+                    this.closeConfigModal();
+                }
             };
         }
+
+        // Live check for SL/TP changes
+        const checkRisk = () => {
+            const warningBox = document.getElementById("riskWarning");
+            if (!warningBox) return;
+            
+            const stopLossInput = document.getElementById("stopLoss");
+            const takeProfitInput = document.getElementById("takeProfit");
+            
+            const currSL = parseFloat(stopLossInput?.value || 0);
+            const currTP = parseFloat(takeProfitInput?.value || 0);
+            
+            const origSL = parseFloat(stopLossInput?.dataset.original || 0);
+            const origTP = parseFloat(takeProfitInput?.dataset.original || 0);
+            
+            if (currSL !== origSL || currTP !== origTP) {
+                warningBox.classList.remove("hidden");
+            } else {
+                warningBox.classList.add("hidden");
+            }
+        };
+
+        const stopLossInput = document.getElementById("stopLoss");
+        const takeProfitInput = document.getElementById("takeProfit");
+        if (stopLossInput) stopLossInput.addEventListener("input", checkRisk);
+        if (takeProfitInput) takeProfitInput.addEventListener("input", checkRisk);
     }
 
     /**
@@ -84,12 +114,23 @@ class ModalManager {
     }
 
     /**
-     * Open configuration modal
+     * Open configuration modal.
+     * Fires the onConfigOpen callback (if set) first so the form can be
+     * pre-populated with live data before the user sees it.
      */
-    openConfigModal() {
-        if (this.modals.config) {
-            this.modals.config.style.display = "flex";
+    async openConfigModal() {
+        if (!this.modals.config) return;
+
+        // Pre-populate the form if a callback is registered
+        if (this.onConfigOpen) {
+            try {
+                await this.onConfigOpen();
+            } catch (error) {
+                console.warn("Could not load config before opening modal:", error);
+            }
         }
+
+        this.modals.config.style.display = "flex";
     }
 
     /**
@@ -103,16 +144,20 @@ class ModalManager {
 
     /**
      * Save configuration
+     * @returns {boolean} True if successful, false if validations failed
      */
     saveConfig() {
-        if (!this.modals.config) return;
+        if (!this.modals.config) return false;
+
+        const stopLossInput = document.getElementById("stopLoss");
+        const takeProfitInput = document.getElementById("takeProfit");
 
         const config = {
             stopLoss: parseFloat(
-                document.getElementById("stopLoss")?.value || 0
+                stopLossInput?.value || 0
             ),
             takeProfit: parseFloat(
-                document.getElementById("takeProfit")?.value || 0
+                takeProfitInput?.value || 0
             ),
             maxVolume: parseFloat(
                 document.getElementById("maxVolume")?.value || 0
@@ -126,17 +171,88 @@ class ModalManager {
             ),
         };
 
+        // Validations
+        if (config.stopLoss < 1 || config.stopLoss > 100) {
+            showError("Stop Loss must be between 1% and 100%.");
+            return false;
+        }
+
+        if (config.takeProfit < 1 || config.takeProfit > 100) {
+            showError("Take Profit must be between 1% and 100%.");
+            return false;
+        }
+
+        if (config.maxTrades < 1 || config.maxTrades > 20) {
+            showError("Max Trades must be between 1 and 20.");
+            return false;
+        }
+
+        if (config.minVolume < 0.01 || config.minVolume > 1) {
+            showError("Min Volume must be between 0.01 and 1.");
+            return false;
+        }
+
+        if (config.maxVolume < 1 || config.maxVolume > 5) {
+            showError("Max Volume must be between 1 and 5.");
+            return false;
+        }
+
+        if (config.minVolume > config.maxVolume) {
+            showError("Min Volume cannot be greater than Max Volume.");
+            return false;
+        }
+
+        // Ensure warning resets on close/reopen or when successfully saved
+        document.getElementById("riskWarning")?.classList.add("hidden");
+
         if (this.onConfigSave) {
             this.onConfigSave(config);
         }
+
+        return true;
     }
 
     /**
      * Set callback for config save
-     * @param {Function} callback - Callback function
+     * @param {Function} callback - Called with the config object when user clicks Done
      */
     setConfigSaveCallback(callback) {
         this.onConfigSave = callback;
+    }
+
+    /**
+     * Set async callback invoked before the config modal opens.
+     * Useful for fetching the current config and pre-filling the form.
+     * @param {Function} callback - async function, no arguments
+     */
+    setOnConfigOpenCallback(callback) {
+        this.onConfigOpen = callback;
+    }
+
+    /**
+     * Pre-populate the config form with values from the API.
+     * @param {Object} config - Config with snake_case keys from the API
+     * @param {number} config.stop_loss
+     * @param {number} config.take_profit
+     * @param {number} config.max_volume
+     * @param {number} config.min_volume
+     * @param {number} config.max_trades
+     */
+    populateConfigForm(config) {
+        const set = (id, val, storeOriginal = false) => {
+            const el = document.getElementById(id);
+            if (el && val !== undefined) {
+                el.value = val;
+                if (storeOriginal) {
+                    el.dataset.original = val;
+                }
+            } // end if
+        };
+        set("stopLoss",   config.stop_loss, true);
+        set("takeProfit", config.take_profit, true);
+        set("maxVolume",  config.max_volume);
+        set("minVolume",  config.min_volume);
+        set("maxTrades",  config.max_trades);
     }
 
     /**

@@ -27,25 +27,28 @@ class TradeService {
 
     /**
      * Handle incoming trade update
-     * @param {Object} data - Trade data from socket
+     * @param {Array|Object} data - Trade data from socket (array of trades)
      */
     handleTradeUpdate(data) {
-        // Notify all subscribers
-        this.tradeUpdateCallbacks.forEach((callback) => callback(data));
+        const trades = Array.isArray(data) ? data : [data];
+        trades.forEach((trade) => {
+            this.tradeUpdateCallbacks.forEach((callback) => callback(trade));
+        });
     }
 
     /**
      * Handle incoming history update
-     * @param {Object} data - History data from socket
+     * @param {Array|Object} data - History data from socket (array of deals)
      */
     handleHistoryUpdate(data) {
-        // Skip invalid data
-        if (data.profit === 0 || data.symbol === "") {
-            return;
-        }
-
-        // Notify all subscribers
-        this.historyUpdateCallbacks.forEach((callback) => callback(data));
+        const deals = Array.isArray(data) ? data : [data];
+        deals.forEach((deal) => {
+            // Skip invalid data (empty symbol indicates placeholder)
+            if (!deal.symbol || deal.symbol === "") {
+                return;
+            }
+            this.historyUpdateCallbacks.forEach((callback) => callback(deal));
+        });
     }
 
     /**
