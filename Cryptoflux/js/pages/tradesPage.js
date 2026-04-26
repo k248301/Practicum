@@ -20,6 +20,8 @@ class TradesPage {
         this.currentProfitTicket = null;
         this.dummyInterval = null;
         this.socketConnected = false;
+        this.historyFilters = { start: null, end: null };
+        this.isHistoryFiltered = false;
     }
 
     /**
@@ -69,6 +71,36 @@ class TradesPage {
         tradeRenderer.initialize();
         historyRenderer.initialize();
         modalManager.initialize();
+        this.setDefaultDates();
+        
+        // Apply initial filter if we have data (or when it arrives)
+        this.isHistoryFiltered = true;
+        this.applyHistoryFilters();
+    }
+
+    /**
+     * Set default dates for history filter (Yesterday to Today)
+     */
+    setDefaultDates() {
+        const startInput = document.getElementById(DOM_IDS.START_DATE);
+        const endInput = document.getElementById(DOM_IDS.END_DATE);
+
+        if (startInput && endInput) {
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+
+            // Format as YYYY-MM-DD for input type="date"
+            const formatDate = (date) => date.toISOString().split("T")[0];
+
+            startInput.value = formatDate(yesterday);
+            endInput.value = formatDate(today);
+            
+            // Also update the filter state
+            this.historyFilters.start = new Date(startInput.value);
+            this.historyFilters.end = new Date(endInput.value);
+            this.historyFilters.end.setHours(23, 59, 59, 999);
+        }
     }
 
     /**
@@ -99,6 +131,17 @@ class TradesPage {
 
         // Profit modal timeframe buttons
         this.setupTimeframeButtons();
+
+        // History filter buttons
+        const filterBtn = document.getElementById(DOM_IDS.FILTER_HISTORY_BTN);
+        if (filterBtn) {
+            filterBtn.onclick = () => this.handleHistoryFilter();
+        }
+
+        const resetBtn = document.getElementById(DOM_IDS.RESET_HISTORY_BTN);
+        if (resetBtn) {
+            resetBtn.onclick = () => this.handleHistoryReset();
+        }
     }
 
     /**
@@ -163,11 +206,102 @@ class TradesPage {
         tradeService.onHistoryUpdate((data) => {
             try {
                 historyStore.upsertHistory(data);
-                historyRenderer.renderHistory(data);
+                
+                // Only render if not filtered or if it matches the current filter
+                if (!this.isHistoryFiltered || this.matchesFilter(data)) {
+                    historyRenderer.renderHistory(data);
+                }
             } catch (error) {
                 console.error("Error handling history update:", error);
             }
         });
+    }
+
+    /**
+     * Handle history filter action (simulated fetch)
+     */
+    async handleHistoryFilter() {
+        const fetchBtn = document.getElementById(DOM_IDS.FILTER_HISTORY_BTN);
+        const startDateVal = document.getElementById(DOM_IDS.START_DATE).value;
+        const endDateVal = document.getElementById(DOM_IDS.END_DATE).value;
+
+        if (!startDateVal && !endDateVal) {
+            showToast("Please select at least one date", "info");
+            return;
+        }
+
+        try {
+            if (fetchBtn) fetchBtn.disabled = true;
+            showToast("Fetching trade history...", "info", 1000);
+            
+            // Simulate network delay
+            await new Promise(r => setTimeout(r, 1200));
+
+            this.historyFilters.start = startDateVal ? new Date(startDateVal) : null;
+            this.historyFilters.end = endDateVal ? new Date(endDateVal) : null;
+            
+            // Set end date to end of day
+            if (this.historyFilters.end) {
+                this.historyFilters.end.setHours(23, 59, 59, 999);
+            }
+
+            this.isHistoryFiltered = true;
+            this.applyHistoryFilters();
+            
+        } finally {
+            if (fetchBtn) fetchBtn.disabled = false;
+        }
+    }
+
+    /**
+     * Handle history reset action
+     */
+    handleHistoryReset() {
+        this.setDefaultDates();
+        this.isHistoryFiltered = true;
+        
+        // Re-render filtered history
+        this.applyHistoryFilters();
+    }
+
+    /**
+     * Apply current filters to history data and re-render
+     */
+    applyHistoryFilters() {
+        historyRenderer.clearTable();
+        const allHistory = historyStore.getAllHistory();
+        
+        const filteredHistory = this.isHistoryFiltered 
+            ? allHistory.filter(item => this.matchesFilter(item))
+            : allHistory;
+
+        // Sort by time descending
+        filteredHistory.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+        filteredHistory.forEach(item => {
+            historyRenderer.renderHistory(item);
+        });
+
+        if (this.isHistoryFiltered) {
+            showToast(`Found ${filteredHistory.length} trades`, "success");
+        }
+    }
+
+    /**
+     * Check if a history item matches the current filters
+     */
+    matchesFilter(item) {
+        const itemDate = new Date(item.time);
+        
+        if (this.historyFilters.start && itemDate < this.historyFilters.start) {
+            return false;
+        }
+        
+        if (this.historyFilters.end && itemDate > this.historyFilters.end) {
+            return false;
+        }
+        
+        return true;
     }
 
     /**

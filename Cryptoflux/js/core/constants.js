@@ -73,4 +73,8 @@ export const DOM_IDS = {
     CONFIG_BUTTON: "configButton",
     LOGOUT_BUTTON: "logout-button",
     MENU_TOGGLE: "menuToggle",
+    START_DATE: "startDate",
+    END_DATE: "endDate",
+    FILTER_HISTORY_BTN: "filterHistoryBtn",
+    RESET_HISTORY_BTN: "resetHistoryBtn",
 };

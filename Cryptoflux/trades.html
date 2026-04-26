@@ -66,6 +66,18 @@
 
       <!-- History Data -->
       <div id="HistoryData" class="tabcontent">
+        <div class="filter-bar">
+          <div class="filter-group">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+          </div>
+          <div class="filter-group">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate">
+          </div>
+          <button id="filterHistoryBtn" class="btn2 small-btn">Fetch</button>
+          <button id="resetHistoryBtn" class="btn2 small-btn outline">Reset</button>
+        </div>
         <table id="historyDataTable">
           <thead>
             <tr>
