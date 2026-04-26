@@ -50,3 +50,36 @@ class TestBot(BaseTest):
         time.sleep(1)
         assert bot_btn.get_attribute("data-bot-state") == initial_state
         self.take_screenshot("bot_control_cycle")
+
+    def test_bot_config_negative_values(self):
+        # Open Modal
+        self.wait_for_clickable(TradeLocators.CONFIG_BUTTON).click()
+        self.wait_for_element(TradeLocators.CONFIG_MODAL)
+
+        # Negative Volumes
+        min_vol_input = self.driver.find_element(*TradeLocators.MIN_VOLUME)
+        min_vol_input.clear()
+        min_vol_input.send_keys("-1.0")
+
+        sl_input = self.driver.find_element(*TradeLocators.STOP_LOSS)
+        sl_input.clear()
+        sl_input.send_keys("10.0")
+
+        tp_input = self.driver.find_element(*TradeLocators.TAKE_PROFIT)
+        tp_input.clear()
+        tp_input.send_keys("5.0") # TP is less than SL, should be rejected ideally
+
+        # Save Changes
+        self.driver.find_element(*TradeLocators.SAVE_CHANGES).click()
+
+        # Assuming the UI should prevent this and NOT close the modal
+        # Check that the modal is still displayed
+        time.sleep(1)
+        assert self.driver.find_element(*TradeLocators.CONFIG_MODAL).is_displayed()
+        
+        # Take screenshot of the state
+        self.take_screenshot("bot_config_negative_rejected")
+
+        # Cleanup: close modal
+        self.driver.find_element(*TradeLocators.CANCEL_CHANGES).click()
+
