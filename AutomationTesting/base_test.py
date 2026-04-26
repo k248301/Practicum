@@ -4,14 +4,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import os
+import time
 
 class BaseTest:
-    BASE_URL = "http://localhost:8000"  # Frontend recommended port
+    BASE_URL = "http://127.0.0.1:5500/Cryptoflux"  # Frontend recommended port
 
     @pytest.fixture(autouse=True)
     def setup_driver(self, request):
         options = webdriver.ChromeOptions()
-        # options.add_argument("--headless")
+        #options.add_argument("--headless")
         driver = webdriver.Chrome(options=options)
         driver.maximize_window()
         driver.implicitly_wait(10)
@@ -47,3 +48,7 @@ class BaseTest:
         self.driver.find_element(*LoginLocators.LOGIN_SUBMIT).click()
         # Wait for redirection to home (header is in all pages except index)
         self.wait_for_element((By.ID, "header"))
+        # Ensure header components (Home link) are loaded
+        from locators import HeaderLocators
+        self.wait_for_element(HeaderLocators.HOME_LINK)
+        time.sleep(0.5)

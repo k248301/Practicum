@@ -2,6 +2,7 @@ import pytest
 from base_test import BaseTest
 from locators import LoginLocators, HeaderLocators
 import time
+import random
 
 class TestAuth(BaseTest):
 
@@ -13,7 +14,9 @@ class TestAuth(BaseTest):
         assert self.driver.find_element(*LoginLocators.SIGNUP_FORM).is_displayed()
         
         # Fill Signup Form
-        self.driver.find_element(*LoginLocators.SIGNUP_EMAIL).send_keys("testuser@example.com")
+        num = random.randint(0,1000)
+        email = f"testuser{num}@example.com"
+        self.driver.find_element(*LoginLocators.SIGNUP_EMAIL).send_keys(email)
         self.driver.find_element(*LoginLocators.SIGNUP_PASSWORD).send_keys("TestPass123!")
         self.driver.find_element(*LoginLocators.SIGNUP_CONFIRM).send_keys("TestPass123!")
         

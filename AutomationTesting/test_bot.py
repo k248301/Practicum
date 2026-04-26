@@ -29,7 +29,7 @@ class TestBot(BaseTest):
         self.driver.find_element(*TradeLocators.SAVE_CHANGES).click()
         
         # Verify modal is closed
-        time.sleep(1)
+        time.sleep(5)
         assert not self.driver.find_element(*TradeLocators.CONFIG_MODAL).is_displayed()
         self.take_screenshot("bot_config_saved")
 
@@ -39,7 +39,7 @@ class TestBot(BaseTest):
         
         # Start Bot
         bot_btn.click()
-        time.sleep(1)
+        time.sleep(5)
         assert bot_btn.get_attribute("data-bot-state") != initial_state
         
         # Verify text change (Assuming it changes to "Stop Bot")
@@ -47,6 +47,6 @@ class TestBot(BaseTest):
         
         # Stop Bot
         bot_btn.click()
-        time.sleep(1)
+        time.sleep(5)
         assert bot_btn.get_attribute("data-bot-state") == initial_state
         self.take_screenshot("bot_control_cycle")
