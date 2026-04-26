@@ -7,6 +7,7 @@ import random
 class TestAuth(BaseTest):
 
     def test_registration_flow(self):
+        print("test_registration_flow")
         self.driver.get(f"{self.BASE_URL}/index.html")
         
         # Toggle to Signup
@@ -30,6 +31,7 @@ class TestAuth(BaseTest):
 
     def test_login_logout_flow(self):
         # Login
+        print("test_login_logout_flow")
         self.login("testuser@example.com", "TestPass123!")
         
         # Verify Home Page
@@ -44,6 +46,7 @@ class TestAuth(BaseTest):
         assert "Login" in self.driver.title
 
     def test_invalid_login(self):
+        print("test_invalid_login")
         self.driver.get(f"{self.BASE_URL}/index.html")
         
         # Input wrong credentials
@@ -61,6 +64,7 @@ class TestAuth(BaseTest):
         self.take_screenshot("invalid_login_error")
 
     def test_invalid_signup(self):
+        print("test_invalid_signup")
         self.driver.get(f"{self.BASE_URL}/index.html")
         
         # Toggle to Signup

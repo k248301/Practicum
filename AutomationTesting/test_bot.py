@@ -12,6 +12,7 @@ class TestBot(BaseTest):
         self.wait_for_element(TradeLocators.TRADES_TABLE)
 
     def test_bot_configuration(self):
+        print("test_bot_configuration")
         # Open Modal
         self.wait_for_clickable(TradeLocators.CONFIG_BUTTON).click()
         assert self.wait_for_element(TradeLocators.CONFIG_MODAL).is_displayed()
@@ -34,6 +35,7 @@ class TestBot(BaseTest):
         self.take_screenshot("bot_config_saved")
 
     def test_bot_control(self):
+        print("test_bot_control")
         bot_btn = self.wait_for_clickable(TradeLocators.BOT_BUTTON)
         initial_state = bot_btn.get_attribute("data-bot-state")
         
@@ -47,11 +49,12 @@ class TestBot(BaseTest):
         
         # Stop Bot
         bot_btn.click()
-        time.sleep(5)
+        time.sleep(2)
         assert bot_btn.get_attribute("data-bot-state") == initial_state
         self.take_screenshot("bot_control_cycle")
 
     def test_bot_config_negative_values(self):
+        print("test_bot_config_negative_values")
         # Open Modal
         self.wait_for_clickable(TradeLocators.CONFIG_BUTTON).click()
         self.wait_for_element(TradeLocators.CONFIG_MODAL)

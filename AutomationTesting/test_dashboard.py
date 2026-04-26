@@ -10,6 +10,7 @@ class TestDashboard(BaseTest):
         self.login("testuser@example.com", "TestPass123!")
 
     def test_ui_general_checks(self):
+        print("test_ui_general_checks")
         # Check components visibility
         time.sleep(1) # Allow page initialization
         assert self.wait_for_element(HeaderLocators.HOME_LINK).is_displayed()
@@ -28,6 +29,7 @@ class TestDashboard(BaseTest):
         assert "News" in self.driver.title
 
     def test_news_feed(self):
+        print("test_news_feed")
         self.driver.find_element(*HeaderLocators.NEWS_LINK).click()
         
         # Verify news content is loaded
@@ -43,6 +45,7 @@ class TestDashboard(BaseTest):
         assert slider.get_attribute("scrollLeft") != initial_scroll
 
     def test_market_data(self):
+        print("test_market_data")
         self.driver.find_element(*HeaderLocators.MARKET_LINK).click()
         
         # Wait for toast "Connected to live market data"
@@ -57,6 +60,7 @@ class TestDashboard(BaseTest):
         self.take_screenshot("market_data_table_verified")
 
     def test_market_graph_view(self):
+        print("test_market_graph_view")
         self.driver.find_element(*HeaderLocators.MARKET_LINK).click()
         
         # Wait for rows to be populated and click the first "View" button
