@@ -1,3 +1,4 @@
+import random
 import requests
 import joblib
 import threading
@@ -261,16 +262,17 @@ def main():
     logger.info(f"Loading scaler from {scaler_path}...")
     scaler = joblib.load(scaler_path)
     
-    symbols = ['BTCUSD!', 'ETHUSD!', 'SOLUSD!']
+    symbols = ['BTCUSD!', 'ETHUSD!', 'XRPUSD!', 'LTCUSD!', 'SOLUSD!', 'BNBUSD!', 'DOTUSD!', 'DOGUSD!', 'TETUSD!', 'ADAUSD!', 'AAVUSD!']
 
     while RUNNING:
         stop_loss_percent = BOT_CONFIG["stop_loss"]
         take_profit_percent = BOT_CONFIG["take_profit"]
+        random.shuffle(symbols)
         for symbol in symbols:
             if not RUNNING:
                 break
             if analyze_and_trade(symbol, stop_loss_percent, take_profit_percent, model, scaler):
-                logger.info("Trade placed successfully. Waiting for 4 minutes...")
+                logger.info("Trade placed successfully. Continuing Analysis...")
                 time.sleep(300)
             time.sleep(1) # Small delay to prevent tight loop if no trade
 
