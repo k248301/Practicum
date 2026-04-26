@@ -19,30 +19,46 @@ news_service = NewsService(Config.NEWS_API_KEY)
 @app.route("/fetch-news", methods=["GET"])
 @cache.cached(timeout=Config.CACHE_DEFAULT_TIMEOUT)
 def fetch_news():
+    max_retries = 5
     try:
-        articles, error = news_service.get_news()
-        
-        if error:
-            logger.error(f"Service returned error: {error}")
-            return jsonify({"error": error}), 502
+        for attempt in range(max_retries):
+            articles, error = news_service.get_news()
 
-        logger.info(f"Successfully fetched {len(articles)} articles.")
+            if error:
+                logger.error(f"Service returned error: {error}")
+                return jsonify({"error": error}), 502
+
+            if articles:  # success case
+                logger.info(f"Successfully fetched {len(articles)} articles.")
+                return jsonify({
+                    "status": "success",
+                    "count": len(articles),
+                    "articles": articles
+                }), 200
+
+            logger.warning(f"Attempt {attempt + 1}: No articles found, retrying...")
+
+        # after retries exhausted
+        logger.error("No articles found after retries")
         return jsonify({
             "status": "success",
-            "count": len(articles),
-            "articles": articles
+            "count": 0,
+            "articles": [],
+            "message": "No articles available after retries"
         }), 200
 
     except requests.exceptions.Timeout:
         logger.error("Request timed out in route handler")
         return jsonify({"error": "Request timed out"}), 504
+
     except requests.exceptions.RequestException:
         logger.error("External API error in route handler")
         return jsonify({"error": "External API error"}), 502
+
     except Exception as e:
         logger.exception(f"Internal server error: {e}")
         return jsonify({"error": "Internal server error"}), 500
-
+    
 if __name__ == "__main__":
     logger.info(f"Starting NewsAPI on {Config.HOST}:{Config.PORT}")
     app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)
