@@ -2,10 +2,12 @@ import pytest
 from base_test import BaseTest
 from locators import LoginLocators, HeaderLocators
 import time
+import random
 
 class TestAuth(BaseTest):
 
     def test_registration_flow(self):
+        print("test_registration_flow")
         self.driver.get(f"{self.BASE_URL}/index.html")
         
         # Toggle to Signup
@@ -13,7 +15,9 @@ class TestAuth(BaseTest):
         assert self.driver.find_element(*LoginLocators.SIGNUP_FORM).is_displayed()
         
         # Fill Signup Form
-        self.driver.find_element(*LoginLocators.SIGNUP_EMAIL).send_keys("testuser@example.com")
+        num = random.randint(0,1000)
+        email = f"testuser{num}@example.com"
+        self.driver.find_element(*LoginLocators.SIGNUP_EMAIL).send_keys(email)
         self.driver.find_element(*LoginLocators.SIGNUP_PASSWORD).send_keys("TestPass123!")
         self.driver.find_element(*LoginLocators.SIGNUP_CONFIRM).send_keys("TestPass123!")
         
@@ -27,6 +31,7 @@ class TestAuth(BaseTest):
 
     def test_login_logout_flow(self):
         # Login
+        print("test_login_logout_flow")
         self.login("testuser@example.com", "TestPass123!")
         
         # Verify Home Page
@@ -39,3 +44,42 @@ class TestAuth(BaseTest):
         # Verify Redirection to Login
         self.wait_for_element(LoginLocators.LOGIN_FORM)
         assert "Login" in self.driver.title
+
+    def test_invalid_login(self):
+        print("test_invalid_login")
+        self.driver.get(f"{self.BASE_URL}/index.html")
+        
+        # Input wrong credentials
+        self.driver.find_element(*LoginLocators.LOGIN_EMAIL).send_keys("wrong@example.com")
+        self.driver.find_element(*LoginLocators.LOGIN_PASSWORD).send_keys("WrongPass!")
+        self.driver.find_element(*LoginLocators.LOGIN_SUBMIT).click()
+        
+        # Verify Error Box is visible
+        error_box = self.wait_for_element(LoginLocators.ERROR_BOX)
+        assert error_box.is_displayed()
+        
+        # Additional check to ensure message has content
+        error_message = self.driver.find_element(*LoginLocators.ERROR_MESSAGE)
+        assert len(error_message.text) > 0
+        self.take_screenshot("invalid_login_error")
+
+    def test_invalid_signup(self):
+        print("test_invalid_signup")
+        self.driver.get(f"{self.BASE_URL}/index.html")
+        
+        # Toggle to Signup
+        self.wait_for_clickable(LoginLocators.TOGGLE_LINK).click()
+        self.wait_for_element(LoginLocators.SIGNUP_FORM)
+        
+        # Fill Signup Form with mismatched passwords
+        self.driver.find_element(*LoginLocators.SIGNUP_EMAIL).send_keys("baduser@example.com")
+        self.driver.find_element(*LoginLocators.SIGNUP_PASSWORD).send_keys("Pass123!")
+        self.driver.find_element(*LoginLocators.SIGNUP_CONFIRM).send_keys("MismatchPass!")
+        
+        # Submit
+        self.driver.find_element(*LoginLocators.SIGNUP_SUBMIT).click()
+        
+        # Verify Error Box handles the mismatched password 
+        error_box = self.wait_for_element(LoginLocators.ERROR_BOX)
+        assert error_box.is_displayed()
+        self.take_screenshot("invalid_signup_error")

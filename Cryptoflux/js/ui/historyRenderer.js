@@ -27,6 +27,15 @@ class HistoryRenderer {
     }
 
     /**
+     * Clear the history table
+     */
+    clearTable() {
+        if (this.tableBody) {
+            this.tableBody.innerHTML = "";
+        }
+    }
+
+    /**
      * Render or update a history row
      * @param {Object} data - History data
      */

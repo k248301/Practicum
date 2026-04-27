@@ -1,14 +1,17 @@
 import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
+from datetime import datetime
 
 def setup_logger():
     if not os.path.exists('Logs'):
         os.makedirs('Logs')
 
     log_formatter = logging.Formatter('[%(asctime)s][%(levelname)s][%(message)s]', datefmt='%Y-%m-%d %H:%M:%S')
+    timestamp = datetime.now().strftime("%Y-%m-%d")
+    name = f'Logs/trading_bot_{timestamp}.log'
 
-    file_handler = TimedRotatingFileHandler('Logs/trading_bot.log', when='midnight', interval=1, backupCount=30)
+    file_handler = TimedRotatingFileHandler(name, when='midnight', interval=1, backupCount=30)
     file_handler.setFormatter(log_formatter)
     file_handler.setLevel(logging.INFO)
 

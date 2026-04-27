@@ -30,6 +30,8 @@ class HomeLocators:
 class MarketLocators:
     MARKET_TABLE = (By.ID, "marketDataTable")
     TABLE_ROWS = (By.CSS_SELECTOR, "#marketDataTable tbody tr")
+    VIEW_BTN = (By.CLASS_NAME, "viewBtn")
+    TOAST_MESSAGE = (By.CLASS_NAME, "toast-message")
     GRAPH_MODAL = (By.ID, "graphModal")
     CLOSE_MODAL = (By.ID, "closeGraphModal")
 
