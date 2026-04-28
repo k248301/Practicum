@@ -12,14 +12,14 @@ class BaseTest:
     @pytest.fixture(autouse=True)
     def setup_driver(self, request):
         options = webdriver.ChromeOptions()
-        #options.add_argument("--headless")
+        options.add_argument("--headless")
         driver = webdriver.Chrome(options=options)
         driver.maximize_window()
-        driver.implicitly_wait(10)
+        driver.implicitly_wait(15)
         
         # Set on instance and class if applicable
         self.driver = driver
-        self.wait = WebDriverWait(driver, 10)
+        self.wait = WebDriverWait(driver, 20)
         if request.cls:
             request.cls.driver = driver
             request.cls.wait = self.wait

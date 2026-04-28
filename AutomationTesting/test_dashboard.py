@@ -7,7 +7,7 @@ class TestDashboard(BaseTest):
 
     @pytest.fixture(autouse=True)
     def login_setup(self, setup_driver):
-        self.login("testuser@example.com", "TestPass123!")
+        self.login("k248301@nu.edu.pk", "cyyt7P__")
 
     def test_ui_general_checks(self):
         print("test_ui_general_checks")
