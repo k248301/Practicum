@@ -20,7 +20,18 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
+
+export function getCurrentUser() {
+  return auth.currentUser;
+}
+
+export const authReady = new Promise((resolve) => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    resolve(user);
+    unsubscribe();
+  });
+});
 
 // ----------------------------
 // 🔹 DOM Elements

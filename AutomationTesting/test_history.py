@@ -12,6 +12,7 @@ class TestHistory(BaseTest):
     def login_setup(self, setup_driver):
         self.login("k248301@nu.edu.pk", "cyyt7P__")
         self.driver.find_element(*HeaderLocators.TRADES_LINK).click()
+        time.sleep(6)
         self.wait_for_element(TradeLocators.HISTORY_TABLE)
 
     @allure.story("Trade History Date Filtering")

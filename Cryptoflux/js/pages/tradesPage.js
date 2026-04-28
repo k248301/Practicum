@@ -10,6 +10,7 @@ import { modalManager } from "../ui/modalManager.js";
 import { profitChart } from "../charts/profitChart.js";
 import { showToast, showError, showSuccess } from "../ui/toast.js";
 import { DOM_IDS, TIMEFRAME } from "../core/constants.js";
+import { authReady } from "../../firebase-script.js";
 
 /**
  * Trades Page Controller - Orchestrates all components for the trades page
@@ -31,6 +32,8 @@ class TradesPage {
         if (this.initialized) return;
 
         try {
+            console.log("Waiting for auth...");
+            await authReady;
             console.log("Initializing trades page...");
 
             // Initialize UI components
@@ -72,7 +75,7 @@ class TradesPage {
         historyRenderer.initialize();
         modalManager.initialize();
         this.setDefaultDates();
-        
+
         // Apply initial filter if we have data (or when it arrives)
         this.isHistoryFiltered = true;
         this.applyHistoryFilters();
@@ -95,7 +98,7 @@ class TradesPage {
 
             startInput.value = formatDate(yesterday);
             endInput.value = formatDate(today);
-            
+
             // Also update the filter state
             this.historyFilters.start = new Date(startInput.value);
             this.historyFilters.end = new Date(endInput.value);
@@ -206,7 +209,7 @@ class TradesPage {
         tradeService.onHistoryUpdate((data) => {
             try {
                 historyStore.upsertHistory(data);
-                
+
                 // Only render if not filtered or if it matches the current filter
                 if (!this.isHistoryFiltered || this.matchesFilter(data)) {
                     historyRenderer.renderHistory(data);
@@ -233,13 +236,13 @@ class TradesPage {
         try {
             if (fetchBtn) fetchBtn.disabled = true;
             showToast("Fetching trade history...", "info", 1000);
-            
+
             // Simulate network delay
             await new Promise(r => setTimeout(r, 1200));
 
             this.historyFilters.start = startDateVal ? new Date(startDateVal) : null;
             this.historyFilters.end = endDateVal ? new Date(endDateVal) : null;
-            
+
             // Set end date to end of day
             if (this.historyFilters.end) {
                 this.historyFilters.end.setHours(23, 59, 59, 999);
@@ -247,7 +250,7 @@ class TradesPage {
 
             this.isHistoryFiltered = true;
             this.applyHistoryFilters();
-            
+
         } finally {
             if (fetchBtn) fetchBtn.disabled = false;
         }
@@ -259,7 +262,7 @@ class TradesPage {
     handleHistoryReset() {
         this.setDefaultDates();
         this.isHistoryFiltered = true;
-        
+
         // Re-render filtered history
         this.applyHistoryFilters();
     }
@@ -270,8 +273,8 @@ class TradesPage {
     applyHistoryFilters() {
         historyRenderer.clearTable();
         const allHistory = historyStore.getAllHistory();
-        
-        const filteredHistory = this.isHistoryFiltered 
+
+        const filteredHistory = this.isHistoryFiltered
             ? allHistory.filter(item => this.matchesFilter(item))
             : allHistory;
 
@@ -292,15 +295,15 @@ class TradesPage {
      */
     matchesFilter(item) {
         const itemDate = new Date(item.time);
-        
+
         if (this.historyFilters.start && itemDate < this.historyFilters.start) {
             return false;
         }
-        
+
         if (this.historyFilters.end && itemDate > this.historyFilters.end) {
             return false;
         }
-        
+
         return true;
     }
 

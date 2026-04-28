@@ -12,7 +12,7 @@ class BaseTest:
     @pytest.fixture(autouse=True)
     def setup_driver(self, request):
         options = webdriver.ChromeOptions()
-        options.add_argument("--headless")
+        #options.add_argument("--headless")
         driver = webdriver.Chrome(options=options)
         driver.maximize_window()
         driver.implicitly_wait(15)
