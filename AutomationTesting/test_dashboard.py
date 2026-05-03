@@ -73,3 +73,12 @@ class TestDashboard(BaseTest):
         assert modal.is_displayed(), "Graph modal should be visible"
         self.take_screenshot("market_graph_modal_open")
         
+        # Close the modal
+        close_btn = self.wait_for_clickable(MarketLocators.CLOSE_MODAL)
+        close_btn.click()
+        time.sleep(1)
+        
+        # Verify graph modal is closed
+        assert not modal.is_displayed(), "Graph modal should be closed"
+        self.take_screenshot("market_graph_modal_closed")
+        

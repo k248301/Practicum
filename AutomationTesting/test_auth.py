@@ -93,3 +93,35 @@ class TestAuth(BaseTest):
         error_box = self.wait_for_element(LoginLocators.ERROR_BOX)
         assert error_box.is_displayed()
         self.take_screenshot("invalid_signup_error")
+
+    @allure.story("Empty Form Submission")
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_empty_form_submission(self):
+        print("test_empty_form_submission")
+        self.driver.get(f"{self.BASE_URL}/index.html")
+        
+        # Submit empty login form
+        self.driver.find_element(*LoginLocators.LOGIN_SUBMIT).click()
+        
+        # Verify Error Box handles empty fields
+        error_box = self.wait_for_element(LoginLocators.ERROR_BOX)
+        assert error_box.is_displayed()
+        self.take_screenshot("empty_login_error")
+
+    @allure.story("Invalid Email Format")
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_invalid_email_format(self):
+        print("test_invalid_email_format")
+        self.driver.get(f"{self.BASE_URL}/index.html")
+        
+        # Input improperly formatted email
+        self.driver.find_element(*LoginLocators.LOGIN_EMAIL).send_keys("user@domain") # Missing .com
+        self.driver.find_element(*LoginLocators.LOGIN_PASSWORD).send_keys("ValidPass123!")
+        self.driver.find_element(*LoginLocators.LOGIN_SUBMIT).click()
+        
+        # Verify Error Box or HTML5 validation catches it
+        # Depending on implementation, HTML5 'required' or 'type=email' might prevent submission,
+        # or custom JS handles it. If custom JS, the error box will show.
+        error_box = self.wait_for_element(LoginLocators.ERROR_BOX)
+        assert error_box.is_displayed()
+        self.take_screenshot("invalid_email_format_error")
