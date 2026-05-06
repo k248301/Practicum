@@ -1,5 +1,5 @@
-from flask import Flask
-from flask_socketio import SocketIO
+from flask import Flask, request
+from flask_socketio import SocketIO, join_room, leave_room
 from flask_cors import CORS
 from config import Config
 from repository import MT5Repository
@@ -23,8 +23,15 @@ class MarketDataApp:
     def _setup_routes(self):
         """Define SocketIO event handlers"""
         @self.socketio.on('connect')
-        def handle_connect():
-            print("[INFO] Client connected")
+        def handle_connect(auth):
+            print("[INFO] Client connected")            
+            uid = auth.get('uid') if auth else request.args.get('uid')
+            if uid:
+                join_room(uid)
+                self.service.add_user(uid)
+                print(f"[INFO] User {uid} connected and joined room.")
+            else:
+                print("[WARNING] Client connected without UID.")
 
         @self.socketio.on('disconnect')
         def handle_disconnect():

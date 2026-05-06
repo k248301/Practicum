@@ -1,4 +1,5 @@
 import { API_CONFIG, SOCKET_EVENTS } from "../core/constants.js";
+import { getCurrentUser } from "../../firebase-script.js";
 
 /**
  * Socket Service - Manages WebSocket connection
@@ -26,7 +27,11 @@ class SocketService {
                     return;
                 }
 
+                const user = getCurrentUser();
+                const auth = user ? { uid: user.uid } : {};
                 this.socket = io.connect(url, {
+                    auth: auth, // Pass UID in auth object
+                    query: user ? `uid=${user.uid}` : "", // Fallback as query param
                     extraHeaders: {
                         "ngrok-skip-browser-warning": "true",
                     },

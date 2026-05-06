@@ -1,0 +1,5 @@
+Label,# Samples,Average,Min,Max,Std. Dev.,Error %,Throughput,Received KB/sec,Sent KB/sec,Avg. Bytes
+CryptoFlux,690,6,3,16,1.65,0.000%,2.06270,13.55,0.28,6727.0
+CryptoFlux Market,60,4,3,8,0.99,0.000%,6.29459,27.42,0.87,4461.0
+CryptoFlux News,60,5,3,10,1.38,0.000%,6.29789,20.44,0.85,3323.0
+TOTAL,810,5,3,16,1.64,0.000%,2.42137,14.91,0.33,6307.0

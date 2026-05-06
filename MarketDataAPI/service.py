@@ -1,9 +1,14 @@
 from datetime import datetime
 import threading
 import sys
+import hashlib
 from flask_socketio import SocketIO
 from repository import MarketRepository
 from config import Config
+
+ADMIN_UID = "O8pOUpjPMwRM4eH9CmF1JYTmub53"
+def get_user_magic(uid):
+    return int(hashlib.md5(uid.encode()).hexdigest(), 16) % 10000000
 
 class MarketDataService:
     """
@@ -15,6 +20,12 @@ class MarketDataService:
         self.socketio = socketio
         self.running = False
         self._threads = []
+        self.active_users = set()
+        self.user_lock = threading.Lock()
+
+    def add_user(self, uid):
+        with self.user_lock:
+            self.active_users.add(uid)
 
     def start(self):
         print("[INFO] => Starting MarketDataService")
@@ -53,20 +64,45 @@ class MarketDataService:
         self.socketio.sleep(2)  # Wait for server to be ready
         while self.running:
             try:
-                data = self.repository.get_active_trades()
-                self.socketio.emit('On_Trades_Data_Update', data)
+                all_trades = self.repository.get_active_trades()
+                
+                with self.user_lock:
+                    users = list(self.active_users)
+                
+                for uid in users:
+                    if uid == ADMIN_UID:
+                        # Admin sees everything
+                        user_trades = all_trades
+                    else:
+                        magic = get_user_magic(uid)
+                        # Regular filtering: magic or UID-specific comment
+                        user_trades = [t for t in all_trades if t.get('magic') == magic or t.get('identity') == f"bot-{uid[:5]}"]
+                    
+                    self.socketio.emit('On_Trades_Data_Update', user_trades, room=uid)
+                    
             except Exception as e:
                 print(f"[ERROR] => Trades Loop error: {e}", flush=True)
-            self.socketio.sleep(0.5)
+            self.socketio.sleep(1.0)
 
     def _run_history_loop(self):
         print("[INFO] => Started History Loop", flush=True)
-        self.socketio.sleep(2)  # Wait for server to be ready
+        self.socketio.sleep(2)
         while self.running:
             try:
-                data = self.repository.get_history_deals()
-                self.socketio.emit('On_History_Data_Update', data)
+                all_history = self.repository.get_history_deals()
+                
+                with self.user_lock:
+                    users = list(self.active_users)
+                
+                for uid in users:
+                    if uid == ADMIN_UID:
+                        # Admin sees everything
+                        user_history = all_history
+                    else:
+                        magic = get_user_magic(uid)
+                        user_history = [h for h in all_history if h.get('magic') == magic or h.get('comment') == f"bot-{uid[:5]}"]
+                    
+                    self.socketio.emit('On_History_Data_Update', user_history, room=uid)
             except Exception as e:
                 print(f"[ERROR] => History Loop error: {e}", flush=True)
-            self.socketio.sleep(2)  # History doesn't need to be as frequent
-
+            self.socketio.sleep(5.0)

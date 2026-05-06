@@ -1,16 +1,20 @@
 import pytest
+import allure
 from base_test import BaseTest
 from locators import HeaderLocators, TradeLocators
 import time
 
+@allure.feature("Trading Bot")
 class TestBot(BaseTest):
 
     @pytest.fixture(autouse=True)
     def login_setup(self, setup_driver):
-        self.login("testuser@example.com", "TestPass123!")
+        self.login("k248301@nu.edu.pk", "cyyt7P__")
         self.driver.find_element(*HeaderLocators.TRADES_LINK).click()
         self.wait_for_element(TradeLocators.TRADES_TABLE)
 
+    @allure.story("Bot Configuration")
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_bot_configuration(self):
         print("test_bot_configuration")
         # Open Modal
@@ -34,6 +38,8 @@ class TestBot(BaseTest):
         assert not self.driver.find_element(*TradeLocators.CONFIG_MODAL).is_displayed()
         self.take_screenshot("bot_config_saved")
 
+    @allure.story("Bot Start/Stop Control")
+    @allure.severity(allure.severity_level.BLOCKER)
     def test_bot_control(self):
         print("test_bot_control")
         bot_btn = self.wait_for_clickable(TradeLocators.BOT_BUTTON)
@@ -53,6 +59,8 @@ class TestBot(BaseTest):
         assert bot_btn.get_attribute("data-bot-state") == initial_state
         self.take_screenshot("bot_control_cycle")
 
+    @allure.story("Bot Configuration - Negative Values")
+    @allure.severity(allure.severity_level.NORMAL)
     def test_bot_config_negative_values(self):
         print("test_bot_config_negative_values")
         # Open Modal

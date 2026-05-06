@@ -118,6 +118,7 @@ class MT5Repository(MarketRepository):
                     'swap': float(deal_dict['swap']),
                     'profit': float(deal_dict['profit']),
                     'comment': deal_dict['comment'],
+                    'magic': deal_dict['magic'],
                     'reason': int(deal_dict['reason']),
                 }
                 arrHistoryDeals.append(historyDeal)
@@ -146,6 +147,7 @@ class MT5Repository(MarketRepository):
                     'profit': float(trade_dict['profit']),
                     'change': change,
                     'identity': trade_dict['comment'],
+                    'magic': trade_dict['magic'],
                 }
                 tradesData.append(tradeData)
         return tradesData

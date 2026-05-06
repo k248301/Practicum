@@ -7,7 +7,7 @@ class TestDashboard(BaseTest):
 
     @pytest.fixture(autouse=True)
     def login_setup(self, setup_driver):
-        self.login("testuser@example.com", "TestPass123!")
+        self.login("k248301@nu.edu.pk", "cyyt7P__")
 
     def test_ui_general_checks(self):
         print("test_ui_general_checks")
@@ -72,4 +72,13 @@ class TestDashboard(BaseTest):
         modal = self.wait_for_element(MarketLocators.GRAPH_MODAL)
         assert modal.is_displayed(), "Graph modal should be visible"
         self.take_screenshot("market_graph_modal_open")
+        
+        # Close the modal
+        close_btn = self.wait_for_clickable(MarketLocators.CLOSE_MODAL)
+        close_btn.click()
+        time.sleep(1)
+        
+        # Verify graph modal is closed
+        assert not modal.is_displayed(), "Graph modal should be closed"
+        self.take_screenshot("market_graph_modal_closed")
         
